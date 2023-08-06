@@ -1,15 +1,12 @@
 ---
+import Layout from '../components/Layout.astro'
+import { getCollection } from 'astro:content';
+
+const title = "Experienced engineer and Product Manager"
+const blogPosts = await getCollection('drafts', ({ data }) => {
+  return `${data.draft}` === import.meta.env.DRAFTS;
+});
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<h1>{title}</h1>
+<Layout collection={blogPosts} title={title} />

@@ -1,0 +1,15 @@
+---
+
+const {Content, title, collection} = Astro.props
+import Meta from '../components/Meta.astro'
+---
+
+<html lang="en">
+	<head>
+		<Meta title={title} />
+	</head>
+	<body>
+		{Content && <Content />}
+		{collection && collection.map(post => <li><a href={post.slug}>{post.data.title}</a></li>)}
+	</body>
+</html>

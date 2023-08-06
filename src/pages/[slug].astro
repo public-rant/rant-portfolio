@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+// 1. Get the slug from the incoming server request
+const { slug } = Astro.params;
+if (slug === undefined) {
+  throw new Error("Slug is required");
+}
+// 2. Query for the entry directly using the request slug
+const entry = await getEntry("drafts", slug);
+// 3. Redirect if the entry does not exist
+if (entry === undefined) {
+  return Astro.redirect("/404");
+}
+
+import Layout from '../components/Layout.astro'
+// 4. (Optional) Render the entry to HTML in the template
+const { Content, components } = await entry.render();
+// import Heading from '../Heading.astro';
+---
+<!-- --- -->
+<!-- Creates a custom <h1> for the # syntax, _and_ applies any custom components defined in `content.mdx` -->
+<!-- <Content components={{...components, h1: Heading }} /> -->
+
+<Layout Content={Content} title={entry.data.title} />

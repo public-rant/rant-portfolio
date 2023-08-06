@@ -1,0 +1,344 @@
+---
+draft: true
+title: Distributed Computing with HTTP, XML, SOAP, and WSDL
+slug: distributed-computing
+---
+
+import OrderedList from '../../components/OrderedList.astro';
+export const components = {ol: OrderedList,p:OrderedList}
+
+## DISTRIBUTED COMPUTING WITH HTTP, XML, SOAP, AND WSDL
+
+------------------------------------------------------------------------
+
+> "I think there is a world market for maybe five computers." - Thomas
+> Watson, chairman of IBM, 1943
+
+Perhaps Watson was off by four.
+
+In the early 1990s, few people had heard of Tim Berners-Lee's World Wide
+Web, and, of those that had, many fewer appreciated its significance.
+After all, computers had been connected to the Internet since the 1970s,
+and transferring data among computers was commonplace. Yet the Web
+brought something really new: the perspective of viewing the whole
+Internet as a single information space, where users accessing data could
+move seamlessly and transparently from machine to machine by following
+links.
+
+A similar shift in perspective is currently underway, this time with
+application programs. Although distributed computing has been around for
+as long as there have been computer networks, it's only recently that
+applications that draw upon many interconnected machines as one vast
+computing medium are being deployed on a large scale. What's making this
+possible are new protocols for distributed computing built upon HTTP,
+and that are designed for *programs interacting with programs*, rather
+than for *people surfing with browsers*.
+
+There are several kinds of protocols:
+
+1.  **Data exchange:** Something better than scraping text from Web
+    pages intended for humans to read. As you saw in the "Basics"
+    chapter, you can use XML here.
+2.  **Program invocation:** Some way to do *remote method invocation*,
+    that is, for programs to call programs running on other machines and
+    to reply to such invocations. The emerging standard here, submitted
+    to the Web Consortium in May 2000, is called SOAP (Simple Object
+    Access Protocol).
+3.  **Self-description**: A machine-readable way for programs to
+    describe how they are supposed to be called, e.g., with Web Services
+    Description Language (WSDL).
+4.  **Discovery**: A way for programs to automatically learn about other
+    programs, e.g., with Universal Description Discovery and Integration
+    (UDDI), standardized by .
+
+We're currently moving from an environment where applications are
+deployed on individual machines and Web servers, to a world where
+applications are composed of pieces — called *services* in the current
+jargon — that are spread across many different machines, and where the
+services interact seamlessly and transparently to produce an overall
+effect. While the consequences of this change could be minor, it's also
+possible that they could be as profound as the introduction of the Web.
+In any case, companies are introducing new *Web service* frameworks that
+exploit the new infrastructure. Microsoft's *.NET* is one such
+framework.
+
+In this chapter, you'll build applications that consume Web services to
+combine data from from your online learning community with remote data
+in and . You'll be building SOAP clients to these public services. In
+the final exercises, you'll be creating your own service that provides
+information about recent content appearing in your community. You'll
+make this service available both in the *de jure* standard of SOAP and
+the *de facto* standard of RSS, a breakout from the world of weblogs.
+
+\*\*\*\* insert figure \*\*\*\*\*
+
+**Figure 14.1:** A Web services interaction. Human users talk to servers
+A and B via the HTTP protocol receiving results in HTML pages. When
+Server A needs to invoke a procedure on Server B it first tries to
+figure out what the names of the functions are and their arguments. This
+information comes back in a Web Services Description Language (WSDL)
+document. Using the information in that WSDL document, Server A is able
+to formulate a legal Simple Object Access Protocol (SOAP) request and
+process the results.
+
+### SOAP ON THE WIRE
+
+Depending on what tools you're using you might never need to know what
+SOAP requests and replies actually look like. Nonetheless, let's start
+with a behind-the-scenes look at *SOAP messages*, which are typically
+sent across the network embedded in HTTP POSTs.
+
+Here's a raw SOAP request/response pair for a hypothetical "who's
+online" service that returns information about users who have been
+active in the last N seconds:
+
+**Request** (plus whitespace for readability)
+
+**Response** (plus whitespace for readability)
+
+### EXERCISE 1: COMMUNITY READING LIST, DATA MODEL AND AMAZON API
+
+Your goal in this exercise is to provide a facility for your community
+members to develop a shared reading list, a set of books that new or
+novice members might find useful. You'll use the SOAP interface that is
+part of Amazon Web Services () to retrieve product information directly
+from the Amazon servers that will then be displayed within your server's
+HTML pages.
+
+Start by writing a design document that lays out your SQL data model and
+how you're going to use the Amazon API (which functions to call? which
+values to process?). Your table probably should be keyed by the
+International Standard Book Number (ISBN). For most of your career as a
+data modeler, it is best to use generated keys. However, in this case
+there is an entire infrastructure to ensure the uniqueness of the ISBN
+(see ) and therefore it is safe for use as a primary key.
+
+For each book, your data model ought to be able to record at least the
+following:
+
+FIXME
+
+You may wish to start your exploration of the Amazon SOAP API by
+locating the Web Services Description Language (WSDL) file for the
+service. The WSDL file is a formal description of the callable
+functions, argument names and types, and return value type. Most
+Internet application development environments provide a SOAP toolset
+that transforms the WSDL file into a set of proxy classes or function
+libraries that can be called as if the service were implemented in the
+local runtime. In Microsoft Visual Studio .NET, this operation is
+referred to as "Adding a Web Reference". If you're not a Microsoft
+Achiever you might find the "SOAP Implementations" links at the end of
+the chapter useful.
+
+### EXERCISE 2: COMMUNITY READING LIST, BUILDING THE PAGES
+
+We suggest creating a subdirectory at for the page scripts that will
+make up your new module. We suggest implementing the following URLs:
+
+FIXME
+
+A good rule of thumb is that every table you add to your data model
+implies roughly 5 user-accessible URLs and 5 administrative URLs. So far
+we're up to 4 user pages and if you were to launch this feature you'd
+need to build some admin pages.
+
+### EXERCISE 3: ENCOURAGING SEARCHING BEFORE ASKING AND THE GOOGLE APIS
+
+A major challenge threatening online communities is the clutter of
+recurring questions and the effort of pointing those who ask them to the
+FAQ or the search engine. An existing content item on your server or
+elsewhere on the Internet might not provide a complete answer to Joe
+Newbie's question, but reading it would perhaps cause him to focus his
+query in a different direction.
+
+In this exercise, you'll create an alternative post confirmation process
+that will entail writing two new Web scripts, the search capabilities
+that you developed in , and the Google Web APIs service (). The goal is
+to put some internal and external links in front of Joe Newbie and
+encourage him to look at them before finalizing his question for
+presentation to the entire community.
+
+Your new post confirmation process should be invoked only for questions
+that start a discussion thread, not for answers to a question. Our
+experience with online communities is that it is more important to
+moderate the questions that determine what will be discussed rather than
+individual answers.
+
+If your current post confirmation page is at , we suggest adding a
+suffix for your new script, e.g., . This page should have the following
+form:
+
+1.  at the top, the user's question as it will appear in the forum, with
+    "Confirm" and "Edit" buttons underneath
+2.  the top 5-10 matches among the site's articles and existing
+    discussion forum postings that match the user's question in a
+    full-text search (feed the one-line summary or perhaps the entire
+    question to your local search engine)
+3.  the top 5-10 matches in the Google database for the user's question,
+    again using the user's question as the Google query string
+
+At this point you have something of a challenge. Suppose that you want
+the user to browse down into some of the internal and external links
+before posting. Let's assume that, in fact, the question is a new one.
+You don't want to force Joe Newbie to back up to find the confirm page
+(and you really don't want the browser to say "Page Expired" and force
+Joe to resubmit). Ideally, Joe can go forward into the links and yet
+still have those Confirm and Edit buttons in front of him at all times.
+
+There are a few ways to achieve this. One is to make all of the links
+target a separate window using the HTML syntax for the anchor () tag.
+Novice users might become confused, however, as the extra window pops up
+on their screen and they might not know how to use their browser or
+operating system to get back to the Confirm/Edit page. A JavaScript
+pop-up in a small size might reduce the scale of this problem. Another
+option is to use the dreaded Frames feature of HTML, putting the
+Confirm/Edit page in one frame and the other stuff in another frame.
+When Joe finally decides to Confirm/Edit, the Frames syntax provides a
+mechanism for the server to tell the browser "go back to only one window
+now". A third option is to do a "server-side frame" in which you build
+pages of the form in which the full posting with Confirm/Edit buttons is
+carried through and the content of the external or internal link is
+presented inside a single page.
+
+For the purpose of this exercise, you're free to choose any of these
+methods or one that we haven't thought of. Note that this exercise
+should not require modifying any of your database tables or existing
+scripts except for one link from the "ask a new question" page.
+
+### EXERCISE 4: RELATED BOOKS TO A THREAD (AMAZON AGAIN)
+
+In this exercise you'll put a list of related books somewhere alongside
+the presentation of a discussion forum thread. This is useful for the
+following reasons: (a) a reader might find it very useful to learn that
+there is a relevant book on the topic being discussed, and (b) the
+Amazon Associates program provides Web publishers with a referral fee
+("kickback") every time a community member follows an encoded link over
+to Amazon and buys something.
+
+How can the server tell which books are related to a question-and-answer
+exchange? Start by building a procedure that will go through the
+question and all replies to build a list of frequently occurring words.
+Your procedure should exclude those words that are in a stopwords list
+of exceedingly common English words such as "the", "and", "or", etc.
+Whatever full-text search tool that you used in the "Search" chapter
+probably contains such a list somewhere in a file system file or a
+database table. You can use the top few words in this list to query
+Amazon for a list of matching titles.
+
+For the purpose of this exercise, you can fetch your Amazon data on
+every page load. In practice, on a production site this would be bad for
+your users due to the extra latency and bad for your relationship with
+Amazon because you might be performing the same query against their
+services several times per second. You'd probably decide to store the
+related books in your local database, along with a "last message" stamp
+and rebuild periodically if there were new replies to a thread.
+
+Each related book should have a link to the product page on Amazon.com,
+optionally keyed with an Amazon Associates ID. Here's an example
+reference:
+
+The ISBN goes after the "ASIN", and the Associates ID in this example is
+"pgreenspun-20".
+
+### EXERCISE 5: WHAT'S NEW PAGE
+
+If you don't already have one, build an HTML page that lists the ten
+most recently added content items in your community. For each content
+item display the following:
+
+FIXME
+
+Make this page available at in a directory of your choice. Note that it
+should be easy to build this page using a function drawing on the
+intermodule API that you defined as part of your work on exercises.
+
+### EXERCISE 6: WHAT'S NEW WEB SERVICE
+
+Expose your procedure to the wider world so that other applications can
+take advantage via remote method invocation. Install a SOAP handler that
+accomplishes the following:
+
+> FIXME
+
+Your development platform may provide tools that, once you've mapped the
+external Web service to the internal procedure call, handle the HTTP and
+SOAP mechanics transparently. If not, you will need to skim the examples
+in the SOAP specification and read the introductory articles linked
+below.
+
+### EXERCISE 7: SELF-DESCRIPTION
+
+Write a WSDL contract that describes the inputs and outputs for your
+service. Note that if you are using Microsoft .NET, these WSDL contracts
+will be automatically generated in most cases. You need only expose
+them.
+
+Your WSDL should be available either by adding a to the URL of the
+service itself (convenient for Microsoft .NET users) or available by
+adding a extension to the URL of the service itself.
+
+Validate your WSDL contract and SOAP methods by inviting another team to
+test your service. Do the same for them. Alternatively, look for and
+employ validation tools out on the Web.
+
+### THE MARCH OF PROGRESS
+
+The initial Web standards, circa 1990, were simple. HTTP is simple
+enough that any competent programmer can write a basic server in a day
+or two. HTML is simple enough that programmers were able to build their
+first page within thirty minutes and non-programmers weren't far behind.
+In fact, the initial Web standards were so simple that academic computer
+scientists predicted that the system wouldn't work.
+
+Within a decade, however, the Web Consortium was focussing its efforts
+on the "Semantic Web" and Resource Description Framework (see ). Where
+standards committee members once talked about whether or not to
+facilitate adding a caption to a photograph, you now hear words like
+"ontology" thrown around. Web development has thus become as challenging
+as cracking the Artificial Intelligence problem.
+
+Where do SOAP and WSDL sit on this continuum from the simplicity of HTML
+to the AI-complete problem of a semantic Web? Apparently they are closer
+to RDF than to HTML because it is taking many years for SOAP and WSDL to
+catch on as opposed to the wildfire-like spread of the human-readable
+Web.
+
+The dynamic world of weblogs has settled on a standard that has spread
+very quickly indeed and enabled the construction of quite a few computer
+programs that aggregate information from multiple weblogs. This
+standard, pushed forward primarily by Userland's Dave Winer, is known as
+*Really Simple Syndication* or *RSS* and is documented at .
+
+### EXERCISE 8: WHAT'S NEW SYNDICATION FEED
+
+As a kindness to the thousands of people who run desktop weblog
+aggregators, create an RSS feed for your content at . The feed should
+contain just the title, description, and a globally unique identifier
+(GUID) for each item. You are encouraged to use the fully qualified URL
+for the item as its GUID, if it has one.
+
+Validate your feed using a RSS reader or the validator at .
+
+**Template**
+
+Remember to escape any markup in your titles and descriptions, so that,
+for example, becomes .
+
+### MORE
+
+FIXME
+
+### TIME AND MOTION
+
+Teams using a SOAP toolkit ought to be able to complete the three major
+API-consuming sections (Amazon, Google, Amazon again) in two to four
+hours each. If working in divide-and-conquer mode, it might make sense
+to have the same team members do both Amazon sections. The remaining
+exercises (5 through 8) should each take an hour or less.
+
+------------------------------------------------------------------------
+
+Return to   
+  
+
+, ,

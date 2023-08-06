@@ -1,0 +1,287 @@
+---
+draft: true
+title: User Activity Analysis
+slug: user-activity-analysis
+---
+
+import OrderedList from '../../components/OrderedList.astro';
+export const components = {ol: OrderedList,p:OrderedList}
+
+## USER ACTIVITY ANALYSIS
+
+------------------------------------------------------------------------
+
+This chapter looks at ways that you can monitor user activity within
+your community and how that information can be used to personalize a
+user's experience.
+
+### STEP 1: ASK THE RIGHT QUESTIONS
+
+Before considering what is technically feasible, it is best to start
+with a wishlist of the questions about user activity that have relevance
+for your client's application. Here are some starter questions:
+
+FIXME
+
+### STEP 2: LOOK AT WHAT'S EASILY AVAILABLE
+
+Every HTTP server program can be configured to log its actions.
+Typically the server will write two logs: (1) the "access log",
+containing one line corresponding to every user request, and (2) the
+"error log", containing complete information about what went wrong
+during those requests that resulted in program errors. A "file not
+found" will result in an access log entry, but not a error log entry
+because the server did not have to catch a script bug. By contrast, a
+script sending an illegal SQL command to the database will result in
+both an access log and an error log entry.
+
+Below is a snippet from the file , which records one day of activity on
+this server (philip.greenspun.com). Notice that the name of the log
+file, "2003-03-06", is arranged so that chronological success will
+result in lexicographical sorting succession and therefore, when viewing
+files in a directory listing, you'll see a continuous progression from
+oldest to newest. The file itself is in the "Common Logfile Format", a
+standard developed in 1995.
+
+The first line can be decoded as follows:
+
+> A user on a computer at the IP address **193.2.79.250**, who is not
+> telling us his login name on that computer nor supplying an HTTP
+> authentication login name to the Web server (**- -**), on March 6,
+> 2003 at 9 hours 11 minutes 59 seconds past midnight in a timezone 5
+> hours behind Greenwich Mean Time (**06/Mar/2003:09:11:59 -0500**),
+> requested the file **/dogs/george** using the **GET** method of the
+> **HTTP/1.1** protocol. The file was found by the server and returned
+> normally (status code of **200**) but it was returned by an
+> ill-behaved script that did not give the server information about how
+> many bytes were written, hence the **0** after the status code. This
+> user followed a link to this URL from **http://www.photo.net/** (the
+> referer header) and is using a browser that first falsely identifies
+> itself as Netscape 4.0 (**Mozilla 4.0**), but then explains that it is
+> actually merely **compatible** with Netscape and is really Microsoft
+> Internet Explorer 5.0 on Windows NT (**MSIE 5.0; Windows NT**). On a
+> lightly used service we might have configured the server to use and
+> log the hostname of rather than the IP address, in which case we'd
+> have been able to glance at the log and see that it was someone at a
+> university in Slovenia.
+
+That's a lot of information in one line, but consider what is missing.
+If this user previously logged in and presented a cookie, we can't tell
+and we don't have that user ID. On an e-commerce site we might be able
+to infer that the user purchased something by the presence of a line
+showing a successful request for a "complete-purchase" URL. However we
+won't see the dollar amount of that purchase, and surely a \$1000
+purchase is much more interesting than a \$10 purchase.
+
+### STEP 3: FIGURE OUT WHAT EXTRA INFORMATION YOU NEED TO RECORD
+
+If your client is unhappy with the kind of information available from
+the standard logs, there are three basic alternatives:
+
+FIXME
+
+If all that you need is the user ID for every request, it is often a
+simple matter to configure the HTTP server program, e.g., Apache or
+Microsoft Internet Information Server, to append the contents of the
+entire cookie header or just one named cookie to each line in the access
+log.
+
+When that isn't sufficient, you can start adding columns to database
+tables. In a sense you've already started this process. You probably
+have a column in your table, for example. This information could be
+derived from the access logs, but if you need it to show a "member since
+2001" annotation as part of their user profile, it makes more sense to
+keep it in the RDBMS. If you want to offer members a page of "new items
+since your last visit" you'll probably add and columns to the users
+table. Note that you need because as soon as User \#345 returns to the
+site your software will update . When he or she clicks the "new since
+last visit" page, it might be only thirty seconds since the timestamp in
+the column. What User \#345 will more likely expect is new content since
+the preceding Monday, his or her previous session with the service.
+
+Suppose the marketing department starts running ad campaigns on ten
+different sites with the goal of attracting new members. They'll want a
+report of how many people registered who came from each of those ten
+foreign sites. Each ad would be a hyperlink to an encoded URL on your
+server. This would set a session cookie saying "source=nytimes" ("I came
+from an ad on the New York Times Web site"). If that person eventually
+registered as a member, the token "nytimes" would be written into a
+column in the table. After a month you'll be asked to write an admin
+page querying the database and displaying a histogram of registration by
+day, by month, by source, etc.
+
+The road of adding columns to transaction-processing tables and building
+ad hoc SQL queries to answer questions is a long and tortuous one. The
+traditional way back to a manageable information system with users
+getting the answers they need is the *dimensional data warehouse*,
+discussed at some length in the data warehousing chapter of SQL for Web
+Nerds at . A data warehouse is a heavily denormalized copy of the
+information in the transaction-processing tables, arranged so as to
+facilitate queries rather than updates.
+
+The exercises in this chapter will walk you through these three
+alternatives, each of which has its place.
+
+### EXERCISE 1: SEE HOW THE OTHER HALF LIVES
+
+Most Web publishers have limited budgets and therefore limited access to
+programmers. Consequently they rely on standard log analysis programs
+analyzing standard server access logs. In this exercise you'll see what
+they see. Pick a standard log analyzer, e.g., the analog program
+referenced at the end of this chapter, and prepare a report of all
+recorded user activity for the last month.
+
+An acceptable solution to this exercise will involve linking the most
+recent report from the site administration pages so that the publisher
+can view it. A better solution will involve placing a "prepare current
+report" link in the admin pages that will invoke the log analyzer on
+demand and display the report. An exhaustive (exhausting?) solution will
+consist of a scheduled process ("cron job" in Unix parlance, "at
+command" or "scheduled task" on Windows) that runs the log analyzer
+every day, updating cumulative reports and preparing a new daily report,
+all of which are accessible from the site admin pages.
+
+Make sure that your report clearly shows "404 Not Found" requests (any
+standard log analyzer can be configured to display these) and that the
+referer header is displayed so that you can figure out where the bad
+link is likely to be.
+
+### SECURITY RISKS OF RUNNING PROGRAMS IN RESPONSE TO A WEB REQUEST
+
+Running the log analyzer in response to an administrator's request
+sounds innocent, but any system in which an HTTP server program can
+start up a new process in response to a Web request presents a security
+risk. Many Web scripting languages have "exec" commands in which the Web
+server has all of the power of a logged-in user typing at a command
+line. This is a powerful and useful capability, but a malicious user
+might be able to, for example, run a program that will return the
+username/password file for the server.
+
+In the Unix world the most effective solution to this challenge is ,
+short for *change root*. This command changes the file system root of
+the Web server, and any program started by the Web server, to some other
+place in the file system, e.g., . A program in the directory can't be
+executed by the chrooted Web server because the Web server can't even
+describe a file unless its path begins with . The root directory, , is
+now . One downside of this approach is that if the Web server needs to
+run a program in the directory it can't. The solution is to take all of
+the utilities, server log analyzers, and other required programs and
+move them underneath , e.g., to .
+
+Sadly, there does not seem to be a Windows equivalent to , though there
+are other ways to lock down a Web server in Windows so that its process
+can't execute programs.
+
+### EXERCISE 2: COMEDY OF ERRORS
+
+The last thing that any publisher wants is for a user to be faced with a
+"Server Error" in response to a request. Unfortunately, chances are that
+if one user gets an error there will be plenty more to follow. The HTTP
+server program will log each event, but unless a site is newly launched
+chances are that no programmer is watching the error log at any given
+moment.
+
+First make sure that your server is configured to log as much
+information as possible about each error. At the very least you need the
+server to log the URL where the error occurred and the error message
+from the procedure that raised the error. Better Web development
+environments will also log a stack backtrace.
+
+Second, provide a hyperlink from the site-wide administration pages to a
+page that shows the most recent 500 lines of the error log, with an
+option to go back a further 500 lines, etc.
+
+Third, write a procedure that runs periodically, either as a separate
+process or as part of the HTTP server program itself, and scans the
+error log for new entries since the preceding run of the procedure. If
+any of those new entries are actual errors, the procedure emails them to
+the programmers maintaining the site. You might want to start with an
+interval of one hour.
+
+### REAL-TIME ERROR NOTIFICATIONS
+
+The system that you built in Exercise 2 guarantees that a programmer
+will find out about an error within about one hour. On a high-profile
+site this might not be adequate. It might be worth building error
+notification into the software itself. Serious errors can be caught and
+the error handler can call a procedure that sends email. This might be
+worth including, for example, in a centralized facility that allows page
+scripts to connect to the relational database management system (RDBMS).
+If the RDBMS is unavailable, the sysadmins, dbadmins, and programmers
+ought to be notified immediately so that they can figure out what went
+wrong and bring the system back up.
+
+Suppose that an RDBMS failure were combined with a naive implementation
+of on a site that gets 10 requests per second. Suppose further that all
+of the people on the email notification list have gone out for lunch
+together for one hour. Upon their return, they will find 60x60x10 =
+36,000 identical email messages in their inbox.
+
+To avoid this kind of debacle, it is probably best to have record a
+timestamp in the HTTP server's memory or on disk and use it to ignore or
+accumulate requests for notification that come in, say, within 15
+minutes of a previous request. A reasonable assumption is that a
+programmer, once alerted, will visit the server and start looking at the
+full error logs. Thus need not actually send out information about every
+problem encountered.
+
+### EXERCISE 3: TALK TO YOUR CLIENT
+
+Using the standardized Web server log reports that you obtained in an
+earlier exercise as a starting point, talk to your client about what
+kind of user activity analysis he or she would really like to see. You
+want to do this after you've got at least something to show so that the
+discussion is more concrete and because the client's thinking is likely
+to be spurred by looking over a log analyzer's reports and noticing
+what's missing.
+
+Write down the questions that your client says are the most important.
+
+### EXERCISE 4: DESIGN A DATA WAREHOUSE
+
+Write a SQL data model for a dimensional data warehouse of user
+activity. Look at the retail examples in for inspiration. The resulting
+data model should be able to answer the questions put forth by your
+client in Exercise 3.
+
+The biggest design decision that you'll face during this exercise is the
+granularity of the fact table. If you're interested in how users get
+from page to page within a site, the granularity of the fact table must
+be "one request". On a site such as the national "don't call me"
+registry, , launched in 2003, one would expect a person to visit only
+once. Therefore the user activity data warehouse might store just one
+row per registered user, summarizing their appearance at the site and
+completion of registration, a fact table granularity of "one user". For
+many services, an intermediate granularity of "one session" will be
+appropriate.
+
+With a "one session" granularity and appropriate dimensions it is
+possible to ask questions such as "What percentage of the sessions were
+initiated in response to an ad at Google.com?" (source field added to
+the fact table) "Compare the likelihood that a purchase was made by
+users on their fourth versus fifth sessions with the service?"
+(nth-session field added to the fact table) "Compare the value of
+purchases made in sessions by foreign versus domestic customers"
+(purchase amount field added to the fact table plus a customer
+dimension).
+
+### MORE
+
+FIXME
+
+### TIME AND MOTION
+
+Generating the first access log report might take anywhere from a few
+minutes to an hour depending on the quality of the log analysis tool. As
+a whole the first exercise shouldn't take more than two hours. Tracking
+errors should take two to four hours. Talking to the client will
+probably take about one hour. Designing the data warehouse should take
+about one to two hours, depending on the student's familiarity with data
+warehousing.
+
+------------------------------------------------------------------------
+
+Return to   
+  
+
+, ,

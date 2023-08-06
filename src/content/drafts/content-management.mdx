@@ -1,0 +1,1283 @@
+---
+draft: true
+title: Content Management
+slug: content-management
+---
+
+import OrderedList from '../../components/OrderedList.astro';
+export const components = {ol: OrderedList,p:OrderedList}
+
+## CONTENT MANAGEMENT
+
+------------------------------------------------------------------------
+
+There are two fundamental elements to content management: (1) storing
+stuff in a *content repository*, and (2) supporting the workflow of a
+group of people engaged in putting stuff into that repository. This
+chapter will treat the storage problem first and then the workflow
+support problem. We'll also look at version control for both content and
+software, at look and feel design for individual pages, and at
+navigation design and information architecture.
+
+Part of the art of content management for an online learning community
+is reducing the number of types of content. For example, consider a
+community where the publisher says "I want articles \[magnet content\],
+comments from users on articles, news from the publisher, comments on
+news from users, questions from users, and answers to questions." A
+naive implementation from these specifications would result in the
+creation of six database tables: . From the RDBMS's perspective, there
+is nothing overwhelming about six tables. But consider that every new
+table defined in the RDBMS implies roughly twenty Web scripts. Ten of
+these scripts will constitute a user experience: view a directory of
+content in Table A, view one category, view one item, view the newest
+items, grab a form to insert an item, confirm insertion, request an
+email alert of comments on an item. Ten of these scripts will constitute
+an administrator's experience: view a directory of content in Table A,
+view one category, view one item, view the newest items, approve an
+item, disapprove an item, delete an item, confirm deletion of an item,
+etc. It will be a bit tough to code these twenty scripts in a general
+fashion because the SQL statements will differ in at least the table
+names used.
+
+Consider further that to offer a complete index of site content, you'll
+have to write a program that pulls text from at least six tables into a
+single index.
+
+How different are these six kinds of content, really? We'll look at the
+tables that we need to define for storing articles, then proceed to the
+other types of content.
+
+### A SIMPLE DATA MODEL FOR ARTICLES
+
+Here's a very basic data model for storing articles:
+
+Should all articles in the database be shown to all users? Perhaps it
+would be nice to have the ability to store an article and hold it for
+editorial examination:
+
+Do you trust all the programmers in your organization to remember to
+include a clause in every script on the site? If not, perhaps it would
+be better to rename the table altogether and build a view for use by
+application programmers:
+
+If you change your mind about how to represent approval status, you
+won't need to update dozens of Web scripts; you need only change the
+definition of the view. (See the views chapter of SQL for Web Nerds at
+for more on this idea of using SQL views as a means of programming
+abstraction.)
+
+### COMMENTS ON ARTICLES
+
+Recall the six required elements of online community:
+
+1.  magnet content authored by experts
+2.  **means of collaboration**
+3.  powerful facilities for browsing and searching both magnet content
+    and contributed content
+4.  means of delegation of moderation
+5.  means of identifying members who are imposing an undue burden on the
+    community and ways of changing their behavior and/or excluding them
+    from the community without them realizing it
+6.  means of software extension by community members themselves
+
+A facility that lets a user post an alternative perspective to a
+published article is a means of collaboration that distinguishes a
+one-way publishing site from an online community. More interestingly,
+the facility lifts the Internet application out of the constraints of
+the literate culture within which Western culture has operated ever
+since Gutenberg (1452). A literate culture produces such works as the
+Michelin Green Guide to Italy: "Extending below the town is the park of
+the 16th-century Villa Orsini (Parco dei Mostri) which is a Mannerist
+creation with a series of fantastically shaped sculptures." Compare that
+description to these photos showing just a tiny portion of the Parco dei
+Mostri ("Park of Monsters"):  
+  
+
+  
+
+If a friend of yours came back from this place and showed these slides,
+you'd expect to hear something much richer and more interesting than the
+Michelin Guide's sentence. A literate culture operates with the implicit
+assumption that knowledge is closed, that Italian tourism can fit into a
+book. Perhaps the 350 pages of the Green Guide aren't enough, but some
+quantity of writers and pages would suffice to encapsulate everything
+worth knowing about Italy.  
+
+Oral cultures do not share this belief. Knowledge is open-ended. People
+may hold differing opinions without one person being wrong. There is not
+necessarily one truth; there may be many truths. Though he didn't grow
+up in an oral culture, Shakespeare knew this. Watch *Troilus and
+Cressida* and its five perspectives on the nature of a woman's love and
+try to figure out which perspective Shakespeare thinks is correct.
+
+Feminists, chauvinists, warmongers, pacifists, Jew-haters, inclusivists,
+cautious people, heedless people, misers, doctors, medical malpractice
+lawyers, atheists, and the pious are all able to quote Shakespeare in
+support of their beliefs. That's because Shakespeare uses the multiple
+characters in each of his plays to show his culture's multiple truths.
+
+In the 400 years since Shakespeare we've become much more literate.
+There is usually one dominant truth. Sometimes this is because we've
+truly figured something out. It is tough to argue that a physics
+textbook on Newtonian mechanics should be an open-ended discussion
+(though a user comment facility might still be very useful in providing
+clarifying explanations for confusing sections). Yet even in the natural
+sciences, one can find many examples in which the culture of literacy
+distorts discourse.
+
+Academic journals of taxonomic botany reveal disagreement on whether
+Specimen 947 collected from a particular field in Montana is a member of
+species X or species Y. But the journals imply agreement on the
+taxonomy, i.e., on how to build a categorization tree for the various
+species. If you were to eavesdrop on a cocktail party in a university's
+department of botany, you'd discover that even this agreement is
+illusory. There is widespread disagreement on what constitutes the
+correct taxonomy. Hardly anyone believes that the taxonomy used in
+journals is correct, but botanists have to stick with it for publication
+because otherwise older journal articles would be rendered
+incomprehensible. Taxonomic botany based on an oral culture or a
+computer system capable of showing multiple views would look completely
+different.
+
+The Internet and computers, used competently and creatively, make it
+much easier and cheaper to collect and present multiple truths than in
+the old world of print, telephone, and snail mail. Multiple-truth Web
+sites are much more interesting than single-truth Web sites and, per
+unit of effort and money invested, much more effective at educating
+users.
+
+### IMPLEMENTING COMMENTS
+
+Comments on articles will be represented in a separate table:
+
+This table differs from the table only in a single column: . How about
+combining the two:
+
+### WHAT IS DIFFERENT ABOUT NEWS?
+
+What is so different about news that we need to have a separate table?
+Oftentimes news has an expiration date, after which it is no longer
+interesting and should be pushed into an archive. "Pushing into an
+archive" does not necessarily mean that the item must be moved into a
+different table. It might be enough to program the presentation scripts
+so that unexpired news items are on the first page and expired items are
+available by clicking on "archives".
+
+Often a company's press release will be tagged "for release Monday,
+April 17." If a publisher wants to continue receiving press releases
+from this company, it will respect these dates. This implies the need
+for a column in the news data model.
+
+Other than these two columns ( and ), it would seem that a news story
+needs more or less the same columns as articles: a place for a one-line
+summary, a place for the body of the story, a way to indicate
+authorship, a way to indicate approval within the editorial workflow.
+
+Upon further reflection, however, perhaps these columns could be useful
+for all site content. An article on upgrading from Windows 2000 to
+Windows XP probably should be set to expire in 2006. If a bunch of
+authors and editors are working on a major site update, perhaps it would
+be nice to synchronize the release of the new content for Tuesday at
+midnight. Let's go back to :
+
+How do we find news stories amongst all the content rows? What
+distinguishes a news story with a scheduled release time and expiration
+date from an article on the Windows 2003 operating system with a
+scheduled release time and expiration date? We'll need one more column:
+
+Notice the explicit checks for NULL in the view definition above. You'd
+think that something simpler such as
+
+would work. The problem here is SQL's three-valued logic. For the RDBMS
+to return a row, all of the AND clauses must return true. NULL is not
+true. Any expression or calculation including a NULL evaluates to NULL.
+Thus
+
+will exclude any rows where is NULL.
+
+### WHAT IS DIFFERENT ABOUT DISCUSSION?
+
+It seems that we've managed to treat four of the six required content
+types with one table. What's more, we've done it without having a long
+list of NULLed columns for a typical item. For an article, will be NULL.
+For content that is not temporal, the release and expiration times will
+be NULL. Otherwise, most of the columns will be filled most of the time.
+
+What about questions and answers in a discussion forum? If there is only
+one forum on the site, we can simply add rows to the table with a of
+"forum_posting" and query for the questions by checking . On a site with
+multiple forums, we'd need to add a column to indicate under which topic
+a given question falls. Within a forum with many archived posts, we'll
+also need some way of storing categorization, e.g., "this is a Darkroom
+question". See for a running example of a multi-forum system in which
+older postings are categorized. The "Discussion" chapter of this book
+treats this subject in more detail.
+
+### WHY NOT USE THE FILE SYSTEM?
+
+Let's step back for a moment and ask ourselves why we aren't making more
+use of the hierarchical file system on our server. What would be wrong
+with having articles stored as .html files in directories? This is the
+way that most Web sites were built in the 1990s and it is certainly
+impossible to argue with the performance and reliability of this
+approach.
+
+One good thing about the file system is that there are a lot of tools
+for users with different levels of skill to add, update, remove, and
+rename files. Programmers can use text editors. Designers can use Web
+design tools and FTP the results. Page authors can use HTML editors such
+as Microsoft Front Page.
+
+One bad thing about giving many people access to the file system is the
+potential for chaos. A designer is supposed to upload a template, but
+ends up removing a script by mistake. Now users can't log into the site
+anymore. The standard Windows and Unix file systems aren't versioned. It
+isn't possible to go back and ask "What did this file look like six
+months ago?" The file system does not by itself support any workflow
+(see below). You authorize someone to modify a file or not. You can't
+say "User 37 is authorized to update this article on aquarium filters,
+but the members shouldn't see that update until it is approved by an
+editor."
+
+The deepest problem with using the file system as a cornerstone of your
+content management system is that files are outside of the database. You
+will need to store a lot of references to content in the database, e.g.,
+"User 960 is the author of Article 231", "Comment 912 is a comment on
+Article 529", etc. It is very difficult to keep a set of consistent
+references to things outside the RDBMS. Suppose that your RDBMS tables
+are referring to file system files by file name. Someone renames a file.
+The database doesn't know. The database's referential integrity
+constraint mechanisms cannot be invoked to protect against this
+circumstance. It is much easier to keep a set of data structures
+consistent if they are all within the RDBMS.
+
+Static .html files also have the problem of being, well, static. Suppose
+that you want a standard header and footer on every page. You can cut
+and paste these into every .html file on the system. But what if you
+want to change "Copyright 2003" to "Copyright 2006" in the site-wide
+footer? You may have to update thousands of files. Suppose that you want
+the header to include a "Login" link if the request comes in with no
+user authorization cookie and a "Logout" link if the request comes in
+from a registered user.
+
+Some of the problems with publisher maintenance of static .html files
+can be solved by periodically writing and running clever Perl scripts.
+Deeper problems with the user experience remain, however. First and
+foremost is the fact that with a static .html file every person who
+views the page thinks that he or she might be the only person ever to
+have viewed the page. This makes for a very lonely Internet experience
+and, generally speaking, not a very profitable one for the publisher.
+
+A sustainable online business will typically offer some sort of online
+community interaction anchored by its content and will offer a
+consistently personalized user experience. These requirements entail
+some sort of computer program executing on every page load. So you might
+as well take this to its logical conclusion and build every URL in your
+application the same way: script in the file system executes and pulls
+content from the RDBMS.
+
+### EXERCISE 1
+
+Develop a data model for the content that you'll be storing on your
+site. Note that at a bare minimum your content repository needs to be
+capable of handling a discussion forum since we'll be building that in a
+later chapter.
+
+You might find that, in making the data model precise with SQL table
+definitions, questions for the client arise. You realize that your
+earlier discussions with the client were too vague in some areas. This
+is a natural consequence of building a SQL data model. Pick up the phone
+and call your client to get clarifications. Email with several
+alternative concrete scenarios. Get your client accustomed to fielding
+questions in a timely manner.
+
+Show the draft data model to your teaching assistant and discuss with
+other students before proceeding.
+
+### HOW THE WORKFLOW PROBLEM ARISES
+
+It is easy to build and maintain a Web site if
+
+FIXME
+
+Fortunately for companies and programmers that hope to make a nice
+living from providing content management "solutions", the preceding
+conditions seldom obtain at better-financed Web sites. What is more
+typical are the following conditions:
+
+FIXME
+
+The publisher decides what major content sections are available, when a
+content section goes live, and the relative prominence to be assigned
+each content section.
+
+The information designer decides what navigational links are available
+from every document on the page, how to present the available content
+sections, and what graphic design elements are required.
+
+The graphic designer contributes drawings, logos, and other artwork in
+service of the information designer's objectives. The graphic designer
+also produces mock-up templates (static HTML files) in which these
+artwork elements are used.
+
+The programmer builds production templates and computer programs that
+reflect the instructions of publisher, information designer, and graphic
+designer.
+
+Editors approve content and decide when specific pages go live. Editors
+assign relative prominence among pages within sections.
+
+In keeping with their relative financial compensation, we consider the
+needs and contributions of authors second to last. Authors stuff
+fragments of HTML, plain text, photographs, music, and sound, into the
+database. These authored entities will be viewed by users only through
+the templates developed by the programmers.
+
+Below is an example workflow that we used to assign to students at MIT:
+
+### A WORKFLOW PROBLEM WITHOUT ANY WORK
+
+The preceding section dealt with the problem of supporting the standard
+publishing world. You know all the authors. They know what they're
+supposed to write. In an online learning community, especially a
+non-commercial one, the workflow problem arises before any work has been
+done or assigned. For example, suppose that the publishers behind the
+photo.net community decide that they want the following articles:
+
+FIXME
+
+Among the 300,000 people who visit photo.net every month, surely there
+are people capable of writing each of the preceding articles. We want a
+system where
+
+1.  Joe User can transactionally sign up to write "Platinum prints",
+    thus marking the article "assignment requested pending editorial
+    approval", supplying a brief outline and committing to completing a
+    draft by July 1.
+2.  Jane Editor can approve the outline and schedule, thus generating an
+    email alert back to Joe.
+3.  Joe User gets periodic email reminders of what he has signed up to
+    do and by when.
+4.  Jane Editor is alerted when Joe's first draft is submitted on July
+    17 (Joe is unlikely to be the first author in the history of the
+    world to submit work on time).
+5.  Joe User gets an email alert asking him to review Jane's corrected
+    version and sign off his approval.
+6.  The platinum printing article shows up at the top of Jane Editor's
+    workspace page as "signed off by author" and she clicks to push it
+    live.
+
+Notice the intricacies of the workflow and also the idiosyncracies. The
+New York Times and the Boston Globe put out very similar-looking
+products. They are owned by the same corporation. What do you think the
+chances are that software that supports one newspaper's workflow will be
+adequate to support the other's?
+
+### EXERCISE 2
+
+Lay out the workflow for each content item that will be user-visible in
+your online learning community. For each workflow step, specify (1) who
+needs to give approval, (2) what email alerts are generated, (3) what
+happens if approval is given, and (4) what happens if approval is
+denied.
+
+Tip: we recommend modeling workflow as a finite-state machine in which a
+content item can be in only one state at a time and that single state
+tells you everything that you need to know about the item. In other
+words, your software can take action without ever needing to go back and
+look to see what states the article was in previously.
+
+### VERSION CONTROL (FOR CONTENT)
+
+Anyone involved in the administration and editing of an online learning
+community ought to be able to fetch an old version of a content item. If
+an author complains that a paragraph was dropped, the editors should be
+able to retrieve the first draft of the article from the content
+management system. Old versions are sometimes useful for public users as
+well. For example, on photo.net in the mid-1990s we had a lot of
+classified ads whose subject lines were of the form "Reduced to \$395!"
+A check through the server logs revealed that the ad had been posted
+earlier that day with a price of \$400, then edited a few hours later.
+So technically the subject line was true, but it was misleading. Instead
+of hiring additional administrators to notice this kind of problem, we
+changed the software to store all previous versions of a classified ad.
+When presenting an ad that had been edited, the new scripts offered a
+link to view old versions of the ad. The practice of screaming
+"Reduced!" stopped.
+
+Version control becomes critical for preventing lost updates when people
+are working together. Here's how a lost update can happen:
+
+FIXME
+
+Unfortunately, Version C (the typo fix) is what future users will see;
+all of Shoshana's work was wasted.
+
+Programmers and technical writers at large companies are familiar with
+the problem of lost updates when multiple people are editing the same
+document. File-system based version control systems were developed to
+help coordinate multiple contributors. These systems include the
+original Walter Tichy's Revision Control System (RCS; early 1980s), Dick
+Grune and Brian Berliner's Concurrent Versions System (CVS; 1986), and
+Marc Rochkind's Source Code Control System (SCCS; 1972). These systems
+require more training than is practical for casual users. For example,
+RCS mandates explicit check-out and check-in. While a file is checked
+out by User A it is locked and nobody but User A can check it back in.
+Suppose that User A goes out to lunch, but there is some important news
+that absolutely must be put on the site. What if User A leaves for a
+two-week vacation and forgets to check a bunch of files back in? These
+problems can be worked around manually, but it becomes a challenge when
+the collaborators are on opposite sides of the globe and cannot see "Oh,
+Schlomo's coat is still on the back of his chair so he's not yet left
+for the day."
+
+For distributed authorship of Web content by geographically distributed
+casually connected users, the most practical system turns out to be one
+in which check-in is allowed at any time by any authorized person.
+However, all versions of every document are kept in the database so that
+one can always revert to an earlier version or pull a section out of an
+earlier version. This implies that your content management system will
+have an *audit trail*: a record of past values held by row-column
+intersections in a database table, who was responsible for any changes
+in those values, and when the values were changed.
+
+There are two classical ways to implement an audit trail in an RDBMS.
+The first is to set up separate audit tables, one for each production
+table. Every time an update is made to a production table, the old row
+is written out to an audit table, with a time stamp. This can be
+accomplished transparently via RDBMS triggers, which are described in
+the "Triggers" chapter of SQL for Web Nerds at and demonstrated in
+practice in an open-source audit trail package documented at . The
+second classical approach is to keep current and archived information in
+the same table. This is more expensive in terms of computing resources
+required because the information that you want for the live site is
+interspersed with seldom-retrieved archived information. But it is
+easier if you want to program in the capability to show the site as it
+was on a particular day. Your templates won't have to query a different
+table, they will merely need a different WHERE clause.
+
+Michael Stonebraker, a professor at University of California Berkeley,
+looked at this problem around 1990 and decided to build an RDBMS with,
+among other advanced features, native support for versioning. This
+became the PostgreSQL open-source RDBMS. The original PostgreSQL had a
+"no-overwrite architecture" in which a change to a row resulted in a
+complete new version of that row being written out to the disk. Thus the
+hard disk drive contained all previous versions of every row in the
+table. A programmer could to get all versions from the beginning of time
+("epoch") until January 1, 1995. This innovation made for some nice
+articles in academic journals, but execrable transaction processing
+performance. The modern PostgreSQL scrapped this idea in favor of
+Oracle-style write-ahead logging in which only updates are written to
+the hard drive (see the "Write-Ahead Logging" chapter of the PostgreSQL
+documentation at ).
+
+### SECOND NORMAL FORM
+
+Suppose that you decide to keep multiple versions in a single content
+repository table:
+
+If this table were to contain seven versions of an article with a
+Content ID of 5657 that would violate the primary key constraint on the
+column. What if we remove the primary key constraint? In Oracle this
+prevents us from establishing referential integrity constraints pointing
+to this ID. With no integrity constraints, we will be running the risk,
+for example, that our database will contain comments on content items
+that have been deleted. With multiple rows for each content item, our
+pointers become ambiguous. The statement "User 739 has read Article
+5657" points from a specific row in the table into a set of rows in the
+. Should we try to be more specific? Do we want a comment on an article
+to refer to a specific version of that article? Do we want to know that
+a reader has read a specific version of an article? Do we want to know
+that an editor has approved a specific version of an article? It
+depends. For some purposes, we probably do want to point to a version,
+e.g., for approval, and at other times we want to point to the article
+in the abstract. If we add a column, this becomes relatively
+straightforward.
+
+Retrieving information for a specific version is easy. Retrieving
+information that is the same across multiple versions of a content item
+becomes clumsy and requires a GROUP BY, since we want to collapse
+information from several rows into a one-row report:
+
+We're not really interested in the largest ZIP code for a particular
+content item version. In fact, unless there has been some kind of
+mistake in our application code, we assume that all ZIP codes for
+multiple versions of the same content item are the same. However, GROUP
+BY is a mechanism for collapsing information from multiple rows. The
+SELECT list can contain column names only for those columns that are
+being GROUPed BY. Anything else in the SELECT list must be the result of
+aggregating the multiple values for columns that aren't GROUPed. The
+choices with most RDBMSes are pretty limited: MAX, MIN, AVERAGE, SUM.
+There is no "pick any" function. So we use MAX.
+
+Updates are similarly problematic. The U.S. Postal Service periodically
+redraws the ZIP code maps. Updating one piece of information, e.g.,
+"20016" to "20816", will touch more than one row per content item.
+
+This data model is in First Normal Form. Every value is available at the
+intersection of a table name, column name, and key (the composite
+primary key of and ). However, it is not in Second Normal Form, which is
+why our queries and updates appear strange.
+
+In Second Normal Form, all columns are functionally dependent on the
+whole key. Less formally, a Second Normal Form table is one that is in
+First Normal Form with a key that determines all non-key column values.
+Even less formally, a Second Normal Form table contains statements about
+only one kind of thing.
+
+Our current table contains some information that depends on the whole
+key of and , e.g., the body and the language code. But much of the
+information depends only on the portion of the key: author, creation
+time, release time, ZIP code.
+
+When we need to store statements about two different kinds of things, it
+makes sense to create two different tables, i.e., to use Second Formal
+Form:
+
+How does one query into the versions table and find the latest version?
+A first try might look something like the following:
+
+Is this guaranteed to return only one row? No! There is no unique
+constraint on . In theory, two editors or authors could submit new
+versions of an item within the same second. Remember that the date
+datatype in Oracle is precise only to within one second. Even more
+likely is that an editor doing a revision might click on an editing form
+submit button twice with the mouse or perhaps use the Reload command
+impatiently. Here's a slight improvement:
+
+The column is constrained unique, but we're relying on unstated
+knowledge of our application code, i.e., that will be larger for later
+versions.
+
+Some RDBMS implementations have extended the SQL language so that you
+can ask for the first row returned by a query. A brief look at the
+Oracle manual would lead one to try
+
+but a deeper reading of the manual would reveal that the pseudo-column
+is set before the ORDER BY clause is processed. An accepted way to do
+this in one query is the nested SELECT:
+
+Another common style of programming in SQL that may seem surprising is
+taking the following steps:
+
+1.  open a cursor for the SQL statement
+
+2.  fetch one row from the cursor (this will be the one with the max
+    value in )
+
+3.  close the cursor
+
+### THIRD NORMAL FORM
+
+An efficiency-minded programmer might look at the preceding queries and
+observe that a content version is updated at most ten times per year,
+whereas the public pages may be querying for and delivering the latest
+version ten times per second. Wouldn't it make more sense to compute and
+tag the most current approved version at insertion/update time?
+
+The new column can be maintained via a trigger that runs after insert or
+update and examines the and columns.
+
+Querying for user pages can be simplified with the following view:
+
+Modern commercial RDBMS implementations offer a feature via which rows
+in a table can be spread across different tablespaces, each of which is
+located on a physically separate disk drive. In Oracle, this is referred
+to as *partitioning*:
+
+All of the rows for the live site will be kept together in relatively
+compact blocks. Even if the ratio of old versions to live content is
+99:1 it won't affect performance or the amount of RAM consumed for
+caching database blocks from the disk. As soon as Oracle sees a "WHERE
+CURRENT_VERSION_P =" clause it knows that it can safely ignore an entire
+tablespace and won't bother checking any of the irrelevant blocks.
+
+Have we reached Nirvana? Not according to the database eggheads, whose
+relational calculus formulae do not embrace such factors as how data are
+spread among physical disk drives. The database theoretician would note
+that our data model is in Second Normal Form but not in Third Normal
+Form. In a table that is part of a Third Normal Form data model, all
+columns are directly dependent on the whole key. The column is not
+dependent on the table key, but rather on two other non-key columns (
+and ). SQL programmers refer to this kind of performance-enhancing
+storage of derivable data as "denormalization".
+
+If you want to serve ten million requests per day directly from an RDBMS
+running on a server of modest capacity, you may need to break some
+rules. However, the most maintainable production data models usually
+result from beginning with Third Normal Form and adding a handful of
+modest and judicious denormalizations that are documented and justified.
+
+> Note that any data model in Third Normal Form is also in Second Normal
+> Form. A data model in Second Normal Form is in First Normal Form.
+
+### VERSION CONTROL (FOR COMPUTER PROGRAMS)
+
+Note that a solution to the version control problem for site content
+(stuff in the database) still leaves you, as an engineer, with the
+problem of version control for the computer programs that implement the
+site. These are most likely in the operating system file system and are
+edited by a handful of professional software developers. During this
+class you may decide that it is not worth the effort to set up and use
+version control, in which case your *de facto* version control system
+becomes backup tapes, so make sure that you've got daily backups.
+However, in the long run you need to learn about approaches to version
+control for Internet application development.
+
+Throughout this section, keep in mind that a project with a very clear
+publishing objective, specs that never change, and one very smart
+developer, does not need version control. A project with evolving
+objectives, changing specifications, and multiple contributors needs
+version control.
+
+#### CLASSICAL SOLUTION: ONE DEVELOPMENT AREA PER DEVELOPER
+
+Classically, version control is used by C developers with each C
+programmer working from his or her own directory. This makes sense
+because there is no persistence in the C world. Code is compiled. A
+binary runs that builds data structures in RAM. When the program
+terminates, it doesn't leave anything behind. The entire "tree" of
+software is checked out from a version control repository into the file
+system of the development computer. Changed files are checked back into
+the repository when the programmer is satisfied.
+
+A shallow objection to this development method in the world of
+database-backed Internet applications is that it becomes very tedious to
+make a small change. The programmer checks out the tree onto a
+development server. The programmer installs an RDBMS, then creates an
+RDBMS user and a tablespace. The programmer exports the RDBMS from the
+production site into a dump file, transfers that dump file over the
+network to the development machine, and imports it into the RDBMS
+installation on the development server. Keep in mind that for many
+Internet applications the database may approach one terabyte in size,
+and therefore it could take hours or days to transfer and import the
+dump file. Finally, the programmer finds a free IP address or port and
+sets up an HTTP server rooted at the development tree. Ready to code!
+
+A deeper objection to applying this development method to our world is
+that it is an obstacle to collaboration. In the Internet application
+business, developers always work with the publisher and users. Those
+collaborators need to know, at all times, where to find the latest
+running version of the software so that they can offer criticism and
+advice. If there are ten software developers on a service it is not
+reasonable to ask the publishers and users to check ten separate
+development sites.
+
+#### A SOLUTION FOR OUR TIMES
+
+1.  three HTTP servers (they can be on one physical computer)
+2.  two or three RDBMS users/tablespaces (they can be in one RDBMS
+    instance)
+3.  one version control repository
+
+Let's go through these item by item.
+
+#### ITEM 1: THREE HTTP SERVERS
+
+Suppose that a publisher's overall objective is to serve an Internet
+application accessible at "foobar.com". This requires a production
+server, rooted in the file system at /web/foobar/ (**Server 1**). It is
+too risky to have programmers making changes on the live production
+site. This requires a development server, rooted at /web/foobar-dev/
+(**Server 2**). Perhaps this is enough. When everyone is happy with the
+way that the dev server is functioning, declare a code freeze, test a
+bit, then copy the dev code over to the production directory and
+restart.
+
+What's wrong with the two-server plan? Nothing if the development and
+testing teams are the same, in which case there is no possibility of
+simultaneous development and testing. For a complex site, however, the
+publisher may wish to spend a week testing before launching a revision.
+It isn't acceptable to idle authors and developers while a handful of
+testers bangs away at the development server. The addition of a staging
+server, rooted at /web/foobar-staging/ (**Server 3**) allows development
+to proceed while testers are preparing for the public launch of a new
+version.
+
+Here's how the three servers are used:
+
+1.  developers work continuously in /web/foobar-dev/
+2.  when the publisher is mostly happy with the development site, a
+    named version or branch is created and installed at
+    /web/foobar-staging/
+3.  the testers bang away at the /web/foobar-staging/ server, checking
+    fixes back into the version control repository but only into the
+    staging branch
+4.  when the testers and publishers sign off on the staging server's
+    performance, the site is released to /web/foobar/ (production)
+5.  any fixes made to the staging branch of the code that have not
+    already been fixed by the development team are merged back into the
+    development branch in the version control repository
+
+#### ITEM 2: TWO OR THREE RDBMS USERS/TABLESPACES
+
+Suppose that the publisher has a working production site running version
+1.0 of the software. One could connect the development server rooted at
+/web/foobar-dev/ to the production database. After all, the raison
+d'être of the RDBMS is concurrency control. It will be happy to handle
+eight simultaneous connections from a production Web server plus two or
+three from a development server. The fly in this ointment is that one of
+the developers might get sloppy and write a program that sends rather
+than to the database. Or, less dramatically, a junior developer might
+leave out a WHERE clause in an SQL statement and inadvertently request a
+result set of 10<sup>9</sup> rows, thus slowing down the production
+site.
+
+So it would seem that this publisher will need at least one new
+database. Here are the steps:
+
+1.  create a new database user and tablespace; if this is on a separate
+    physical computer from your production RDBMS server it will protect
+    your production server's performance from inadvertent
+    denial-of-service attacks by sloppy development SQL statements
+2.  export the production database into a file system file, which is a
+    good periodic practice in any case as it will verify the integrity
+    of the database
+3.  import the database export into the new development database
+4.  every time that a developer alters a table, adds a table, or
+    populates a new table, record the operation in a "patches.sql" file
+5.  when ready to move code from staging to production, hastily apply
+    all the data model modifications from patches.sql to the production
+    RDBMS
+
+Should there be three databases, i.e., one for dev, one for staging, and
+one for production? Not necessarily. Unless one expects radical data
+model evolution it may be acceptable to use the same database for
+development and staging. Keep in mind that adding a column to a
+relational database table seldom breaks old queries. This was one of the
+objectives set forth by E.F. Codd in 1970 in "A Relational Model of Data
+for Large Shared Data Banks" () and certainly modern implementations of
+the relational model have lived up to Codd's hopes in this respect.
+
+#### ITEM 3: ONE VERSION CONTROL REPOSITORY
+
+The function of the version control repository is to
+
+FIXME
+
+An example of a system that meets the preceding requirements is
+Concurrent Versions System (CVS), which is free and open-source. CVS
+uses a single file system directory as its repository or "CVS root". CVS
+can run over the Internet so that the repository is on Computer A and
+dev, staging, and prod servers are on Computers B, C, and D.
+Alternatively, you can run everything in separate file system
+directories on one physical computer.
+
+#### GOOD THINGS ABOUT THIS SOLUTION
+
+Let's summarize the good things about the version control (for computer
+programs) solution proposed here:
+
+FIXME
+
+Further reading: (Fogel and Bar 2001; Coriolis), a portion of which is
+available online at .
+
+### EXERCISE 3: VERSION CONTROL
+
+Write down your answers to the following questions:
+
+FIXME
+
+Note that generally most teams must write some additional SQL code to
+complete this exercise, augmenting the data model that they built in
+Exercise 1.
+
+### EXERCISE 4: SKELETAL IMPLEMENTATION
+
+Build enough of the pages so that a group of users can cooperate to put
+a few pieces of content live on your server. Focus your efforts on the
+primary kinds of publisher-authored content that you expect to have in
+your online learning community. For most projects, this will be articles
+and navigation pages to those articles.
+
+After you've got a few articles in, step back and ask the following
+questions:
+
+FIXME
+
+A skeletal implementation should have stable and consistent URLs, i.e.,
+the home page should be just the hostname of the server and filenames
+should be consistent. If you haven't had a chance to make abstract URLs
+work (see the "Basics" chapter), this is a good time to do it. Every
+page should have a descriptive title so that the browser's Back button
+and bookmarks ("favorites") are fully functional. Every page should have
+a "View Source" link at the bottom and a way to contact the persons
+responsible for page function and content. Some sort of consistent
+navigation system should be in place (also see below). The look and feel
+of a skeletal implementation will be plain, but it need not be ugly or
+inconsistent. Look to Google for inspiration, not the personal home
+pages of fellow students at your university.
+
+### LOOK AND FEEL
+
+At this point you have some content on your server. It is thus possible
+to begin experimenting with the look and feel of HTML pages. A good
+place to start is with the following issues:
+
+FIXME
+
+#### SCREEN SPACE
+
+In the 1960s a computer user could tap into a 1/100th share of a
+computer with 1 MB of memory and capable of executing 1 million
+instructions per second, viewing the results on a 19-inch monitor. In
+2005, a computer user gets a full share of a computer with 2000 MB of
+memory (2 GB) and capable of executing 4 billion instructions per
+second. This is roughly a 400,000-fold improvement in available
+computing capability. How does our modern computer user view the results
+of his or her computations? On a 19-inch monitor.
+
+Programmers of most applications no longer need concern themselves too
+much with processor and memory efficiency, which were obsessions in the
+1960s. CPU and RAM are available in abundance. But screen real estate is
+as precious as ever. Look at your page designs. Is the most important
+information available without scrolling? (In the newspaper business, the
+term for this is "above the fold".) Are you making the best use of the
+screen space that you have? Are there large swaths of empty space on the
+page? Could you be using HTML tables to present two or three columns of
+information at the same time?
+
+One particularly egregious waste of screen space is the use of icons.
+Typically, users can't understand what the icons mean so they need to be
+supplemented with plain language annotation. Generally the best policy
+is to *let the information be the interface*, e.g., display a list of
+article categories (the information) where clicking on a category is the
+way to navigate to a page showing articles within that category.
+
+#### TIME
+
+Most people prefer fast to slow. Most people prefer consistent service
+time to inconsistent service time. These two preferences contribute
+substantially to the popularity of McDonald's restaurants worldwide.
+When people are done with their lunch they bring those same preferences
+to computer applications: fast is better than slow; response time should
+be consistent from session to session.
+
+Computer and network speeds will change over the years but human beings
+will evolve much more slowly. Thus we should start by considering limits
+derived from the humanity of our users. The experimental psychologists
+will tell us that short-term memory is good for remembering only about
+seven things at once ("The Magical Number Seven, Plus or Minus Two: Some
+Limits on Our Capacity for Processing Information", George A. Miller,
+The Psychological Review 1956, 63:81-97; ) and that this memory is good
+for only about twenty seconds. It is thus unwise to build any computer
+application in which users are required to remember too much from one
+page to another. It is also unwise to build any computer application
+where the interpage delay is more than twenty seconds. People might
+forget what task they were trying to accomplish!
+
+IBM Corporation carried out some studies around 1970 and discovered the
+following required computer response times:
+
+FIXME
+
+A reasonable goal to strive for in an Internet application is sub-second
+response time. This goal is based partly on IBM's research, partly on
+the inability to achieve (in 2005) the 0.1-second mark at which direct
+manipulation becomes possible, and partly on what is being achieved by
+the best practitioners. Your users will have used Amazon and Yahoo! and
+eBay. Any service that is slower than these is going to set off alarm
+bells in the user's mind: maybe this site is going to fail altogether?
+Maybe I should try to find a competitive site that does the same job but
+is faster?
+
+One factor that affects page-loading time is end-to-end bandwidth
+between your server and the user. You can't do much about this except
+measure and average. Some Web servers can be configured or reprogrammed
+to log the total time spent serving a page. By looking at the times
+spent serving large photographs, for example, you can infer average
+bandwidth available between your server and the users. If the tenth
+percentile users are getting 50 Kbits per second, you know that, even if
+your server were infinitely fast at preparing pages, you should try to
+make sure that your pages, with graphics, are either no larger than 50
+Kbits in size or that the HTML is designed such that the page will
+render incrementally. (A page that is one big TABLE is bad; a page in
+which any images have WIDTH and HEIGHT tags is good because the text
+will be rendered immediately with blank spaces that will be gradually
+filled in as the images are loaded.)
+
+You can verify your decisions about page layout and graphics heaviness
+by comparing your pages to those of the most successful Internet service
+operators such as eBay, Yahoo!, and Amazon.
+
+Remember that in the book and magazine world every page design loads at
+the same speed, which means that page design is primarily a question of
+aesthetics. In the Internet world page design and application speed are
+inextricably linked, which makes page design an engineering problem.
+
+#### WORDS
+
+As a programmer, there are two kinds of text that you will be putting
+into the services that you build: instructions and error messages.
+
+For instructions, you can choose active or passive voice and first,
+second, or third person. Instructions should be second person
+imperative. Leave out the pronouns, e.g., "Enter departure date" rather
+than "Enter your departure date".
+
+Oftentimes you can build a system such that error messages are
+unnecessary. The best user interfaces are those where the user can't
+make a mistake. For example, suppose that an application needs to prompt
+for a date. One could do this with a blank text entry box and no hint,
+expecting the user to type MM/DD/YYYY, e.g., 09/28/1963 for September
+28, 1963. If the user's input did not match this pattern or the date did
+not exist, e.g., 02/30/2002, the application returns a page explaining
+the requirements. A minor improvement would be to add a note next to the
+box: "MM/DD/YYYY". If the application logs showed that the number of
+error pages served was reduced, but not eliminated, perhaps defaulting
+the text entry box to today's date in MM/DD/YYYY format would be better.
+Surf over to your favorite travel site, however, and you'll probably
+find that they've chosen "none of the above". Users are asked to pick a
+date from a JavaScript calendar widget or pull down month and day from
+HTML menus.
+
+**Figure 6.1:** Different ways of asking the user to specify a date.
+Generally it is best to ask in such a way that the user cannot possibly
+make a mistake and necessitate the serving of an error page reading
+"date not properly formatted", "invalid date", or "date in the past".
+
+Sadly, you won't be able to eliminate the need for all error messages.
+Thus you'll have to make a choice between terse or verbose and between
+lazy or energetic. A lazy system will respond "syntax error" to any user
+input that won't work. An energetic system will try to autocorrect the
+user's input or at least figure out what is likely to be wrong.
+
+Studies have shown that it is worthwhile to develop sophisticated
+error-handling pages, e.g., ones that correct the user's input and serve
+a confirmation page. At the very least, it is worth running some regular
+expressions against the user's offending input to see if its defects
+fall into a common pattern that can be explained on an error page. It is
+best to avoid anthropomorphism—the computer shouldn't say "I didn't
+understand what you typed".
+
+#### COLOR
+
+Text is most readable when it is black against a white or off-white
+background. It is best to avoid using color as part of your interface
+with the exception of sticking with conventions such as "blue text =
+hyperlink; purple text = visited hyperlink". If you limit your
+creativity to , the browser will treat your users kindly with familiar
+link colors. By this sparing use of color in your interface you'll have
+most of the color spectrum available for presenting information: charts,
+graphs, photos. Compare and , for example, to see these principles at
+work.
+
+Be a bit careful with medium gray tones at the very top of Web pages.
+Many Web browsers use various shades of gray for the backgrounds of menu
+and button bars at the top of windows. If a Web page has a solid gray
+area at the top, a user may have trouble distinguishing where the
+browser software ends and the page content begins. Notice that pages on
+Yahoo! and Amazon include a bit of extra white space at the top to
+separate their page content from the browser location and menu bars.
+
+Whatever scheme you choose, keep it consistent site-wide. In 1876 MIT
+agreed on cardinal and gray for school colors. See how the agreement is
+holding up by visiting , click on "Administration" and then look at the
+subsites for four departments: IS, Medical, Arts, Disabilities Service.
+
+For an excellent discussion of the use of color, see Macintosh Human
+Interface Guidelines, available online at . Basically the messages are
+the following: (1) use color sparingly, (2) make sure that a colorblind
+person can make full use of the application, and (3) avoid red because
+of its association with alerts and danger.
+
+### NAVIGATION
+
+As with page design, the best strategy for navigation is to copy the
+most successful and therefore familiar-to-your-users Internet
+applications. Best practice for a site home-page circa 2005 seems to
+boil down to the following elements:
+
+1.  a navigation directory to the rest of the site
+2.  news and events
+3.  a single text input box for site-wide search
+4.  a quick form targeting the most frequently requested service on the
+    site, e.g., on an airline site, a quick fare/schedule finder with
+    form inputs for cities and dates
+
+In building the navigation directory, look at . Note that Yahoo! does
+not use icons for category navigation. To get to the photography
+category, underneath Arts & Humanities, you click on the word
+"Photography". *The information is the interface.* This principle is
+articulated in Edward Tufte's classic (Graphics Press, 1997). Tufte
+notes that if you were to have icons you'd also need a text explanation
+underneath. Why not let the text alone be the interface? Tufte also
+argues for broad and flat presentation of information; a user shouldn't
+have to click through eight screens each with only a handful of choices.
+
+On interior pages, it is important to answer the following questions:
+
+FIXME
+
+To answer "Where am I?" relative to other sites on the Internet, you can
+include a logo graphic or font-distinguished site name in the upper left
+corner of each page, hyperlinked to the site home-page. See the interior
+pages at amazon.com for how this works. To answer "Where am I?" relative
+to other pages on the same site, you can include a site map with the
+current page highlighted. On a complex site, this won't scale very well:
+better to use the Yahoo-style navigation bar, also known as
+"hierarchical path" or "bread crumbs". For example, contains the
+following navigation bar:
+
+> Home \> Arts \> Visual Arts \> Photography \> Panoramic
+
+Note that this bar grows in size as O\[log N\] where N is the number of
+pages on the site. Showing a full site map or top tabs results in linear
+growth.
+
+To answer "Where have I been?", start by not instructing the browser to
+change the standard link colors. The user will thus be cued by the
+browser for any links that have already been visited. If you're careful
+with your programming and consistent with your page titles, the user
+will be able to right-click on the Back button and optionally return to
+any previous place on your service. Note further that the Yahoo-style
+navigation bar is effective at answering "Where have I been?" for users
+who have actually clicked down from the home page.
+
+To answer "Where can I go?" you need ... links! Let the browser default
+to standard colors so that users will perceive the links as links. It is
+generally a bad idea to use rollovers, select boxes, or graphics. These
+controls won't work the same from site to site and therefore users may
+not understand how to use them. These controls don't have the property
+that visited links turn a different color; they generally can't or don't
+tap into the browser's history database. Finally, these controls aren't
+effective at showing the user where he or she can go because many of the
+choices are hidden.
+
+### EXERCISE 5: CRITICISM
+
+Take or get a tour of the other projects being built by your classmates
+in this course. For each project make sure that you familiarize yourself
+with the overall service objectives and the data model. Then register as
+a user and author an article. (If you get stuck on any of these steps,
+contact the team members behind the project by phone and email and ask
+them to add links or hints to their server.)
+
+Working with your project team members, write a plain-text critique of
+each project that you review. Look for situations in which the client's
+requirements, as expressed in the planning exercise solutions, can't be
+fulfilled with the data model that you see. Look for opportunities to
+provide constructive criticism. Remember that your classmates don't need
+a self-esteem boost; they need the benefit of your engineering skills.
+
+Here are some suggested areas where it might be easy to find
+improvements:
+
+FIXME
+
+Sign the critique with the name of your project team and also the names
+of all team members.
+
+Email your critique to the team members whose work you've just reviewed.
+Archive these in a file and make them available at
+http://yourservername/doc/critiques/cm-sent.txt. Watch your own inbox
+for critiques coming in from the rest of the class. Please assemble
+these into one file and make them available at
+http://yourservername/doc/critiques/cm-received.txt
+
+### INFORMATION ARCHITECTURE: IMPLICIT OR EXPLICIT?
+
+Suppose that there are 1000 content items on a site. The manner of
+organizing, labeling, and presenting these 1000 items to a user is
+referred to as the *information architecture* of the site. For the sake
+of simplicity, let's start by assuming that we will be presenting all
+1000 items on one page. For the sake of concreteness, we'll assume that
+all the content is related to photography. Even this degenerate one-page
+user experience requires some information architecture decisions. Here
+are a few possibilities:
+
+FIXME
+
+Information architecture decisions have a strong effect on the
+percentage of users who say "I got my questioned answered." Most studies
+of corporate Web sites, all of which owe their tested form to hundreds
+of thousands of dollars in design work, find that users have less than a
+50 percent chance of finding the answer to questions that are in fact
+answerable from documents present on the site. We redid the information
+architecture on the photo.net site, a change that touched only about six
+top-level pages, and the number of new users registering each day
+doubled.
+
+One reason that the information architecture on a typical site is so
+ill-suited to the user is that the architecture is implicit in scripts
+and HTML pages. To test an alternative would involve expensive
+hand-manipulation of computer programs and HTML markup. To offer an
+individual user or class of user a custom information architecture would
+be impossible.
+
+What if we represented information architecture explicitly in database
+tables? These tables would hold the following information:
+
+FIXME
+
+With such a large part of the user experience driven from database
+tables, testing an alternative is as easy as inserting some rows into
+the database from the information architecture admin pages. If during a
+site's conceptualization people can't agree on the best categorization
+of content, it becomes possible to launch with two alternatives. Half
+the users see IA 1 and half see IA 2. If users who've experienced IA 1
+are more likely to register and return, we can assume that IA 1 is
+superior, at least for first-time users.
+
+For the application that you build in this course, it is acceptable to
+take the expedient path of pounding out scripts with an implicit
+information architecture. However, we'd like you to be aware of the
+power for development and testing that can be gained from an explicit
+information architecture.
+
+### EXERCISE 6: THE LIVED-IN LOOK
+
+A skeletal prototype has one big limitation: it is skeletal.
+Incorporating the feedback that you've gotten from other students (in
+Exercise 5) and from instructors, beef up your content management system
+while simultaneously pouring in enough content that your application has
+a "lived-in" look. This will ensure that your system truly is powerful
+enough to handle the users' basic needs.
+
+If your client has an existing site, use that as a source of content and
+minimum requirements. Also look at a couple of sites run by
+organizations with comparable missions and sizes. For example, if you're
+building something for an academic group you might look at Harvard
+University's Department of Molecular and Cellular Biology's Web site at
+. This site illustrates the basic requirements for a medium-sized
+organization's Web site. An "overview" section describes the
+department's purpose and history. A "news" section offers press
+releases. A "faculty" section explains who works there and what their
+specialties are. There are also sections for prospective undergraduates
+and graduate students, i.e., the potential customers for this
+organization. If you're building something for a small non-profit
+organization, look at the Web sites for Sustainable Harvest () and the
+Southern Animal Rescue Association (). If you're working for a small
+manufacturing company, look at , the Web site for Cirrus Design
+Corporation, a Duluth, Minnesota maker of small airplanes.
+
+What if you can't reach your client in time to complete the assignment?
+Or if you can't get content from your client? Use content from their
+existing site or a site operated by a similar organization. Make sure
+that at a minimum there is a lived-in look for a reader who comes to see
+the "About", "News", and "Contact Us" sections. During the remainder of
+the course you'll have an opportunity to replace the placeholder content
+with content from your client.
+
+Note that before embarking on this you may want to read at least the
+"Separating the Designers and the Programmers" section on templates in .
+
+### EXERCISE 7: CLIENT SIGNOFF
+
+Ask your client to register as a user and try out the "lived-in" site.
+Most people have a difficult time designing on a blank sheet of paper.
+You'll get new and different insights from your client by showing them a
+partially finished site than you did at the beginning of the project.
+
+Record your client's answers to the following questions:
+
+1.  What changes would you like to see in the plan, now that you've
+    tried out the prototype?
+2.  What will be the fastest way to fill this site with real content?
+3.  Are we collecting the right amount of information on initial user
+    registration?
+
+### PRESENTING YOUR WORK
+
+If you're enrolled in a course using this textbook, you'll probably be
+asked at this point to give a four-minute presentation of your work on
+the content management system and skeletal implementation of the site.
+
+Four minutes isn't very long so you'll need to rehearse and you'll want
+to make sure that all team members know what they're supposed to do. As
+a general rule, the person speaking should be addressing the audience,
+not typing at a computer. Team Member A talks; Team Member B drives.
+Perhaps at some point in the presentation they switch, but nobody is
+ever talking and driving a computer at the same time.
+
+Open with an "elevator pitch", i.e., the kind of thirty-second
+explanation that you'd give to someone you met during an elevator ride.
+The pitch should explain what problem you're solving and why your system
+will be better than existing mechanisms available to people.
+
+Create one or more users ahead of time so that you don't have to show
+your user registration pages. Everyone who has used the Internet has
+registered at sites. They'll assume that you copied the best practices
+from amazon.com and other popular sites. If you did, the audience will
+be bored. If you didn't, the audience will be appalled by your
+sloppiness. Either way it is best to log in as already-registered users.
+In fact, sometimes you can arrange to prepare two browsers, e.g.,
+Mozilla and MSIE, one of which is logged in as a new user of the service
+and one of which is logged in as a site administrator or some other role
+that you want to demonstrate.
+
+It is best not to refer to "users" during your talk. Instead talk about
+the roles by name. If, for example, you are building a service around
+flying, you could say "A student pilot logs in \[your teammate logs
+in\], finds an article on flight schools in San Francisco \[your
+teammate navigates to this article\], and posts a comment at the bottom
+about how much he likes his particular instructor." Then perhaps swap
+positions and your teammate comes up to say "The site editor \[you
+switch browsers to the one logged in as a site admin\], clicks on the
+new content page \[you click\], sees that there are some new comments
+pending approval, reads this one from a student pilot, and approves it
+\[you click\]." You return the browser to the public page where the
+comment may now be seen in the live site.
+
+Close by parking the browser at a page that reveals as much of the
+site's overall structure as possible. Don't despair if you weren't able
+to show every feature of what you've built. Computer applications are
+all about the tasks that can be accomplished. If you've made the
+audience believe that it will be easy to complete a few clearly
+important tasks, you will have instilled confidence in them.
+
+### EXERCISE 8 (FOR THE INSTRUCTOR)
+
+Call up each team's clients and ask how strongly they agree with the
+following statements:
+
+1.  I believe that my student team understands my problem.
+2.  I understand what my student team is planning to accomplish and by
+    what dates, right through the end of the course.
+3.  My student team has been well-prepared for our meetings.
+4.  My student team is responsive.
+5.  I believe that the content management system my student team has
+    built will be adequate to support the types of documents on my site
+    and the workflow required for publishing those documents.
+6.  I think it is easy for users to register at my site, to recover a
+    lost password, and that users are being asked all the required
+    personal information.
+7.  I like the user administration pages that my student team has built.
+8.  My student team has made it easy for me to check on their progress
+    myself.
+9.  My student team has kept me well informed of their progress.
+10. I am impressed by the clarity and thoroughness of the documentation
+    prepared so far.
+
+Score this exercise by adding scores from each question: 0 for
+"disagree" or wishy-washy agreement (clients won't want to say bad
+things about young volunteers), 1 for "agree", 2 for "strongly agree".
+
+### TIME AND MOTION
+
+The data modeling, workflow, and version control exercises are intended
+to be done by the entire team working together. They should take about
+three hours. Many projects will need to do little more than adapt data
+models and policies from this chapter and put them in their own server's
+/doc directory.
+
+The skeletal implementation may be challenging depending on how
+ambitious the goals of the content management system are, but perhaps 10
+to 20 programmer-hours of work.
+
+Criticizing other teams' work should take about 15 minutes per project
+criticized or about two hours total in a class with 8 to 10 projects.
+This could be done as a group or divided and conquered.
+
+Achieving a lived-in look by pouring in real content shouldn't take more
+than two hours and ought to be divisible among team members.
+
+Talking to the client will probably take about one hour.
+
+------------------------------------------------------------------------
+
+Return to   
+  
+
+, ,

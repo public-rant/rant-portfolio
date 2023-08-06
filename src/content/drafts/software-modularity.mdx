@@ -1,0 +1,628 @@
+---
+draft: true
+title: Software Modularity
+slug: software-modularity
+---
+
+import OrderedList from '../../components/OrderedList.astro';
+export const components = {ol: OrderedList,p:OrderedList}
+
+## SOFTWARE MODULARITY
+
+------------------------------------------------------------------------
+
+At this point in the course, you've built enough software that things
+may be starting to get unwieldy. What will life be like for those who
+maintain your code? Will they be able to figure out what modules you've
+written? Will they be able to find your documentation? Will it be simple
+to make small changes site-wide?
+
+This chapter is about ways to group all the code for a module, to record
+the existence of documentation for that module, to publish APIs to other
+parts of the system, and methods for storing configuration parameters.
+
+### GROUPING CODE
+
+Each module in your system will contain the following kinds of software:
+
+FIXME
+
+Here are some examples of the modules that might be behind a large
+online community:
+
+FIXME
+
+Good software developers might disagree on the division into modules.
+For example, rather than create a separate classified ads module, a
+person might decide that classifieds and discussion are so similar that
+adding and columns to an existing content table makes more sense than
+constructing new tables and that adding a lot of IF statements to the
+scripts that present discussion questions and answers makes more sense
+than writing new scripts.
+
+If the online community is used to support a group of university
+students and teachers, additional specialized modules would be added,
+e.g., for recording which courses are being taught by whom and when,
+which students are registered in which courses, what handouts are
+associated with each class, what assignments are due and by when, and
+what grades have been assigned and by which teachers.
+
+Recall that the software behind an Internet service is frequently
+updated as the community grows and new ideas are developed. Frequently
+updated software is going to have bugs, which means that the system will
+be frequently debugged, oftentimes at 2:00 am and usually by a
+programmer other than the one who wrote the software. It is thus
+important to publish and abide by conventions that make it easy for a
+new programmer to figure out where the relevant source code files are.
+It might take only fifteen minutes to figure out what is wrong and patch
+the system. But if it takes three hours to find the source code files to
+begin with, what would have been an insignificant bug becomes a half-day
+project.
+
+Let's walk through an example of how the software is arranged on the
+photo.net service. The server is configured to operate multiple Internet
+services. Each one is located at which means that all the directories
+associated with photo.net are underneath . The page root for the site is
+. The Web server is configured to look for "library" procedures (shared
+by multiple pages) in , a name derived from the fact that photo.net is
+run on , whose default extension language is Tcl.
+
+RDBMS table, index, and stored procedure definitions for a module are
+stored in a single file in the directory (directory names in this
+chapter are relative to the Web server page root unless specified as
+absolute). The name for this file is the module name followed by a
+extension, e.g., for the chat module. Shared procedures for all modules
+are stored in the single library directory , with each file named
+"modulename-defs.tcl", e.g., .
+
+Scripts that generate individual pages are parked at the following
+locations: for the user pages; for the moderator pages, e.g., where a
+user with moderator privileges would go to delete a posting; for the
+site administrator pages, e.g., where the service operator would go to
+enable or disable a service, delegate moderation authority to another
+user, etc.
+
+A high-level document explaining each module is stored in and linked
+from the index page in . This document is intended as a starting point
+for programmers who are considering using the module or extending a
+feature of the module. The document has the following structure:
+
+1.  Where to find all the software associated with this module
+    (site-wide conventions are nice, but it doesn't hurt to be
+    explicit).
+2.  Big picture information: Why was this module built? Why
+    aren't/weren't existing alternatives adequate for solving the
+    problem? What are the high-level good and bad features of this
+    module? What choices were considered in developing the data model?
+3.  Configuration information: What can be changed easily by editing
+    parameters?
+4.  Use and maintenance information.
+
+For an example of such a document, see .
+
+### SHARED PROCEDURES VERSUS STORED PROCEDURES
+
+Even in the simplest Web development environments, there are generally
+at least two places where procedural abstractions, i.e., fragments of
+programs that are shared by multiple pages, can be developed. Modern
+relational database management systems can interpret Turing-complete
+imperative programming languages such as C#, Java, and PL/SQL. Thus any
+computation that could be performed by any computer could, in principle,
+be performed by a program running inside an RDBMS such as Microsoft SQL
+Server, Oracle, or PostgreSQL. In other words, you don't need a Web
+server or any other tools but could implement page scripting and an HTTP
+server within the database management system in the form of *stored
+procedures*.
+
+As we'll see in the "Scaling Gracefully" chapter, there are some
+performance advantages to be had in splitting off the presentation layer
+of an application into a set of separate physical computers. Thus our
+page scripts will most definitely reside outside of the RDBMS. This
+gives us the opportunity to write additional software that will run
+within or close to the Web server program, typically in the same
+computer language that is used for page scripting, in the form of
+*shared procedures*. In the case of a PHP script, for example, a shared
+procedure could be an include file. In the case of a site where
+individual pages are scripted in Java or C#, a shared procedure might be
+some classes and methods used by multiple pages.
+
+How do you choose between using shared procedures and stored procedures?
+Start by thinking about the multiple applications that may connect to
+the same database. For example, there could be a public Web server, a
+nightly program that pulls out all new information for analysis, a
+maintenance tool for administrators built on top of Microsoft Excel or
+Access, etc.
+
+If you think that a piece of code might be useful to those other systems
+that connect to the same data model, put it in the database as a stored
+procedure. If you are sure that a piece of code is only useful for the
+particular Web application that you're building, keep it in the Web
+server as a shared procedure.
+
+### DOCUMENTATION
+
+> "As we enter the 21st century we find that rifle marksmanship has been
+> largely lost in the military establishments of the world. The notion
+> that technology can supplant incompetence is upon us in all sorts of
+> endeavors, including that of shooting."  
+> -- Jeff Cooper in (1997; Paladin Press)
+
+Given a system with 1000 procedures and no documentation, the typical
+manager will lay down an edict to the programmers: you must write a "doc
+string" for every procedure saying what inputs it takes, what outputs it
+generates, and how it transforms those inputs into outputs. Virtually
+every programming environment going back to the 1960s has support for
+this kind of thinking. The fancier "doc string" systems will even parse
+through directories of source code, extract the doc strings, and print a
+nice-looking manual of 1000 doc strings.
+
+How useful are doc strings? Useful, but not sufficient. The programmer
+new to a system won't have any idea which of the 1000 procedures and
+corresponding doc strings are most important. The new programmer won't
+have any idea why these procedures were built, what problem they solve,
+and whether the whole system has been deprecated in favor of newer
+software from another source. Certainly the 1000 doc strings aren't
+going to convince any programmers to adopt a piece of software. It is
+much more important to present clear English prose that demonstrates the
+quality of your thinking and design work in attacking a real problem.
+The prose does not have to be more than a few pages long, but it needs
+to be carefully crafted.
+
+### SEPARATING THE DESIGNERS AND THE PROGRAMMERS
+
+Criticism and requests for changes will come in proportion to the number
+of people who understand that part of the system being criticized. Very
+few people are capable of data modeling or interaction design. Although
+these are the only parts of the system that deeply affect the user
+experience or the utility of an information system to its operators, you
+will thus very seldom be required to entertain a suggestion in this
+area. Only someone with years of relevant experience is likely to
+propose that a column be added to an SQL table or that five tables can
+be replaced with three tables. A much larger number of people are
+capable of writing Web scripts. So you'll sometimes be derided for your
+choice of programming environment, regardless of what it is or how
+state-of-the-art it was supposed to be at the time you adopted it.
+Virtually every human being on the planet, however, understands that
+mauve looks different from fuchsia and that Helvetica looks different
+from Times Roman. Thus the largest number of suggestions for changes to
+a Web application will be design-related. Someone wants to add a new
+logo to every page on the site. Someone wants to change the background
+color in the discussion forum section. Someone wants to make a headline
+larger on a particular page. Someone wants to add a bit of whitespace
+here and there.
+
+Suppose that you've built your Web application in the simplest and most
+direct manner. For each URL there is a corresponding script, which
+contains SQL statements, some procedural code in the scripting language
+(IF statements, basically), and static strings of HTML that will be
+combined with the values returned from the database to form the
+completed page. If you break down what is inside a Visual Basic Active
+Server Page or a Java Server Page or a Perl CGI script, you always find
+these three items: SQL, IF statements, HTML.
+
+Development of an application with this style of programming is easy.
+You can see all the relevant code for a page in one text editor buffer.
+Maintenance is also straightforward. If a user sends in a bug report
+saying "There is a spelling error on
+http://www.yourcommunity.org/foo/bar" you know that you need only look
+in one file in the file system (/foo/bar.asp or /foo/bar.jsp or
+/foo/bar.pl or whatever) and you are guaranteed to find the source of
+the user's problem. This goes for SQL and procedural programming errors
+as well.
+
+What if people want site-wide changes to fonts, colors, headers and
+footers? This could be easy or hard depending on how you've crafted the
+system. Suppose that default colors are read from a configuration
+parameter system and headers, footers, and per-page navigation aids are
+generated by the page script calling shared procedures. In this happy
+circumstance, making site-wide changes might take only a few minutes.
+
+What if people want to change the wording of some annotation in the
+static HTML for a page? Or make a particular headline on one page
+larger? Or add a bit of white space in one place on one page? This will
+require a programmer because the static HTML strings associated with
+that page are embedded in a file that contains SQL and procedural
+language code. You don't want someone to bring a section of the service
+down because of a botched attempt to fix a typo or add a hint.
+
+#### THE SMALL HAMMER
+
+The simplest way to separate the programmers from the designers is to
+create two files for each URL. File 1 contains SQL statements and some
+procedural code that fills local variables or a data structure with
+information from the RDBMS. The last statement in File 1 is a call to a
+procedure that will fetch File 2, a template file that looks like
+standard HTML with simple references to data prepared in File 1.
+
+Suppose that File 1 is named and is a Perl script. By convention, File 2
+will be named . In preparing a template, a designer needs to know (a)
+the names of the variables being set in index.pl, (b) that one
+references a variable from the template with a dollar sign, e.g., , and
+(c) that to send an actual dollar sign or at-sign character to the user
+it should be escaped with a backslash. The merging of the template and
+local variables established in index.pl can be accomplished with a
+single call to Perl's built-in procedure, which performs standard Perl
+string interpolation, i.e., replacing with the value of the variable .
+
+#### THE MEDIUM HAMMER
+
+If the SQL/procedural script and the HTML template are in separate files
+in the same directory, there is always a risk that a careless designer
+will delete, rename, or modify a computer program. It may make more
+sense to establish a separate directory and give the designers
+permission only on that parallel tree. For example on photo.net you
+might have the page scripts in and templates underneath . A script at
+finishes by calling the shared procedure . This procedure first invokes
+the Web server API to find out what URI is being served. A configuration
+parameter specifies the start of the templates tree. uses the URL plus
+the template tree root to probe in the file system for a template to
+evaluate. If found, the template, in AOLserver ADP format (same syntax
+as Microsoft ASP), is evaluated in the context of 's caller, which means
+that local variables set in the script will be available to the ADP
+file.
+
+The "medium hammer" approach keeps programmers and designers completely
+separated from a file system permissioning point of view. It also has
+the advantage that the shared procedure called at the end of every
+script can do some poking around. Is this a user who prefers text-only
+pages? If so, is there a text-only template available? Is this a user
+who prefers a language other than the site's default? If so, is there a
+template available in which the annotation is in the user's preferred
+language?
+
+#### THE SQL HAMMER
+
+If a system already has extensive RDBMS-backed facilities for versioning
+and permissioning, it may seem natural to store templates in a database
+table. These templates can then be edited from a browser, and changes to
+templates can be managed as part of a site's overall publishing
+workflow. If the information architecture of a site is represented
+explicitly in RDBMS tables (see ), it may be natural to keep templates
+and template fragments in the database along with content types,
+categories, and subcategories.
+
+#### THE SLEDGEHAMMER
+
+Back in 1999, Karl Goldstein was the sole programmer building the entire
+information system for a commercial online community. The managers of
+the community changed their minds about fifteen times about how the site
+should look. Every page should have a horizontal navbar. Maybe vertical
+would be better, actually. But move the navbar on every page from the
+left to the right. After two or three of these massive changes in
+direction, Goldstein developed an elegant and efficient system:
+
+FIXME
+
+Here's an example of how what the user viewed would be divided by master
+and slave templates:  
+  
+
+Logo
+
+Ad Banner
+
+Navigation/Context Bar
+
+Section  
+Links
+
+ 
+
+ 
+
+CONTENT  
+AREA
+
+ 
+
+ 
+
+Footer
+
+  
+  
+Content in gray is derived from the master template. Note that doesn't
+mean that it is static or not page-specific. If a template is an ASP or
+JSP fragment it can execute arbitrarily complex computer programs to
+generate what appears within its portion of the page. Content in aqua
+comes from the per-page template.
+
+This sounds inefficient due to the large number of file system probes.
+However, once a system is in production, it is easy for the Web server
+to cache, per-URL, the results of the file system investigation. In
+fact, the Web server could cache all of the templates in its virtual
+memory for maximum speed. The reason that one wouldn't do this during
+development is that it would make debugging difficult. Every time you
+changed a template you'd have to restart the Web server or clear the
+cache in order to view the results of the change.
+
+### INTERMODULE APIS
+
+Recall from that we want people to be accountable for their actions
+within an online community. One way to enhance accountability is by
+offering a "user contributions" page that will show all contributions
+from a particular user. Wherever a person's name appears within the
+application it will be a hyperlink to this user contributions page.
+
+Given that all site content is stored in relational database tables, the
+most obvious way to start writing the user contributions page script is
+by looking at the SQL data models for each individual module. Then we
+can write a program that queries a few dozen tables to find all
+contributions by a particular user.
+
+A drawback to this approach is that we now have code that may break if
+we change a module's data model, yet this code is not within that
+module's subdirectory, and this code is probably being authored by a
+programmer other than the one maintaining the individual module.
+
+Let's consider a different application: email alerts. Suppose that your
+community offers a discussion forum and a classified ad system, coded as
+separate modules. A user wishes to get a daily summary of activity in
+both areas. Each module could offer a completely separate alerts
+mechanism. However, this would mean that the user would get two email
+messages every night when a single combined email was desired. If we
+build a combined email alert system, however, we have the same problem
+as with the user history page: shared code that depends on the data
+models of individual modules.
+
+Finally, let's look at the site administrator's job. The site
+administrator is probably a busy volunteer. He or she does not want to
+waste twenty mouse clicks to see today's new content. The site
+administrator ought to be able to view recently contributed content from
+all modules on a single page. Does that mean we will yet again have a
+script that depends on every table definition from every module?
+
+Here's a hint at a solution. On the photo.net site each module defines a
+"new stuff" procedure, which takes the following arguments:
+
+FIXME
+
+The output of such a procedure can be simple: HTML for a Web page or
+plain text for an email message. The output of such a procedure can be a
+data structure. The output of such a procedure could be an XML document,
+to be rendered with an XSL style sheet. The important thing is that
+pages interested in "new stuff" site-wide need not be familiar with the
+data models of individual modules, only the name of the "new stuff"
+procedure corresponding to each module. This latter task is made easy on
+photo.net: as each module is loaded by the Web server, it adds its "new
+stuff" procedure name to a site-wide list. A page that wants to display
+site-wide new stuff loops through this list, calling each named
+procedure in turn.
+
+### CONFIGURATION PARAMETERS
+
+It is possible, although not very tasteful, to build a working Internet
+application with the following items hard-coded into each individual
+page:
+
+FIXME
+
+The ancient term for this approach to building software is "putting
+magic numbers in the code." With magic numbers in the code, it is tough
+to grab a few scripts from one service and apply them to another
+application. With magic numbers in the code, it is tough to know how
+many programs you have to examine and modify after a personnel change.
+With magic numbers in the code, it is tough to know if rules are being
+enforced consistently site-wide.
+
+Where should you store parameters such as these? Except for the database
+username and password, an obvious answer would seem to be "in the
+database." There are a bunch of keys (the parameter names) and a bunch
+of values (the parameters). This is the very problem for which a
+database management system is ideal.
+
+At the end of every page script we can query these tables:
+
+If the script gets a row with "t" back, it includes a "View Source" link
+at the bottom of the page. If not, no link.
+
+Recording a redirect required the storage of two rows in the table, one
+for the "from" and one for the "to" URL. When a request comes in, the
+Web server will want to query to figure out if a redirect exists:
+
+where is a bind variable containing the URL requested by the
+currently-connected Web client. Note that this query tells us only that
+such a redirect exists; it does not give us the destination URL, which
+is stored in a separate row of . Believe it or not, the conventional
+thing to do here is a three-way join, including a self-join of :
+
+N-way joins notwithstanding, how tasteful is this approach to storing
+parameters? The surface answer is "extremely tasteful." All of our
+information is in the RDBMS where it belongs. There are no magic numbers
+in the code. The parameters are amenable to editing from admin pages
+that have the same form as all the other pages on the site: SQL queries
+and SQL updates. After a little more time spent with this problem,
+however, one asks "Why are we querying the RDBMS one million times per
+day for information that changes once per year?"
+
+Questions of taste aside, an extra five to ten RDBMS queries per request
+is a significant burden on the database server, which is the most
+difficult part of an Internet application to distribute across multiple
+physical computers (see ) and therefore the most expensive layer in
+which to expand capacity.
+
+A good rule of thumb is that Web scripts shouldn't be querying the RDBMS
+to figure out what to do; they should query the RDBMS only for content
+and user data.
+
+For reasonable performance, configuration parameters should be
+accessible to Web scripts from the Web server's virtual memory.
+Implementing such a scheme with a threaded Web server is pretty
+straightforward because all the code is executing within one virtual
+memory space:
+
+FIXME
+
+A hash table is best because it offers O\[1\] access to the data, i.e.,
+the time that it takes to answer the question "what is the value
+associated with the key 'foobar'" does not grow as the number of keys
+grows. In some hobbyist computer languages, built-in hash tables might
+be known as "associative arrays".
+
+If you expect to have a lot of configuration parameters, it might be
+best to add a "section" column to the table and query by section and
+key. Thus, for example, you can have a parameter called
+"bug_report_email" in both the "discussion" and "user_registration"
+sections. The key to the hash table then becomes a composite of the
+section name and key name.
+
+#### WITH MICROSOFT .NET
+
+Configuration parameters are added to IIS/ASP.NET applications in the
+Web.config file for the application.
+
+For example, if you place the following in (assuming default IIS
+installation)
+
+you will be able to access publisherEmail in a VB .aspx page as follows
+
+By default, configuration settings apply to a directory and all its
+subdirectories. Also by default, these settings can be overridden by
+settings in Web.config files in the subdirectories. More elaborate rules
+for scoping and override behavior can be established using the
+\<location\> tag.  
+  
+More:
+
+FIXME
+
+#### WITH JAVA SERVER PAGES
+
+The following is Jin S. Choi's recommendation for storing and accessing
+configuration parameters when using Java Server Pages.
+
+Specify Parameter tags within the Context specification for your
+application in conf/server.xml. Example:
+
+You can also specify the parameter in the WEB-INF/web.xml file for your
+application:
+
+The "override" attribute in the first example specifies that you do not
+want this value to be overridden by a context-param tag in the web.xml
+file. The default value is "true" (allow overrides).
+
+To retrieve parameters from a servlet or JSP, you can call:
+
+  
+More:
+
+FIXME
+
+### EXERCISE 1
+
+Create a directory on your team server. Create an index page in this
+directory that links to a development standards document ( would be a
+reasonable URL but you can use whatever you like so long as it is
+clearly linked from ).
+
+In this development standards document, cover at least the following
+issues:
+
+1.  naming of URLs: abstract versus non-abstract (bleah), dashes versus
+    underscores (hard for many users to read), spelled out or
+    abbreviated
+2.  naming of URLs used in forms and form processing—will these be at
+    the same URL or will a user working through a sequence of forms
+    proceed , etc.
+3.  RDBMS used
+4.  computer languages used for Web scripts and procedural code within
+    the RDBMS
+5.  means of connecting to the RDBMS (libraries, bind variables, etc.)
+6.  variable-naming conventions
+7.  how to document a module
+8.  how to document a shared procedure
+9.  how to document a Web script (author, valid inputs)
+10. how Web form inputs are validated by scripts
+11. templating strategy chosen (if any)
+12. how to add a configuration variable and how to name it so that at
+    least all parameters associated with a particular module can be
+    identified quickly
+
+Step back from your document before moving on to the next exercise. Ask
+yourself "If a new programmer joined this project tomorrow, and I asked
+her to build a surveys module, would she be able to be an effective
+consistent developer in my environment without talking to me?" Remember
+that a surveys module will require an extensive administrative interface
+for creation of surveys, questions, and possible answers, both admin and
+user interfaces for looking at results, and a user interface for
+answering surveys. If the answer to the question is "Gee, this new
+programmer would have to ask me a lot of questions", go back and make
+your development standards document more explicit and add some more
+examples.
+
+### EXERCISE 2
+
+Document your team's intermodule API within the directory, perhaps at ,
+linked from the doc index page. Your strategy must be able to handle at
+least the following cases:
+
+FIXME
+
+### PROTECTING USERS FROM EACH OTHER'S HTML
+
+Fundamentally, the job of the server behind an online community is to
+take text from User A and display it to User B. Unfortunately, there is
+a security risk inherent in this activity. Suppose that User A is
+malicious and includes tags such as in a comment body? When User B
+visits the page containing this comment, suddenly JavaScript may be
+executing on his machine, downloading objectionable images from various
+locations around the Internet, playing music, popping up new windows,
+and ultimately forcing the user's browser to visit a page of User A's
+choosing.
+
+The most obvious solution would seem to be disallowing all HTML tags.
+Any uploaded text is scanned for the characters \< and \> and, if those
+are present, the posting is rejected with an explanation. This wouldn't
+work out that well in a site for mathematicians! Maybe they need to use
+greater-than and less-than signs in their postings.
+
+The beginning of a workable solution is a procedure, perhaps named
+something such as that takes a user-uploaded text string and performs
+the following conversions:
+
+FIXME
+
+If your page scripts call this procedure any time they are writing
+user-uploaded content out to a browser, no browser will ever interpret
+user-uploaded data as an HTML tag.
+
+That works great for fields such as , , , subject summary lines, etc.,
+where there is no value to having an HTML tag. For some longer documents
+obtained from users, however, it might be nice to enable them to use a
+restricted set of HTML tags such as B, I, EM, P, BR, UL, LI, etc. If
+you're going to store HTML in the database once and serve it back out
+thousands of times per day, it is better to check for legal tags at
+upload time. The problem with checking for disallowed tags such as
+SCRIPT, DIV, and FONT is that HTML keeps getting extended in de jure and
+de facto ways. Unless you want the responsibility of keeping current
+with all of the ways in which new HTML tags can make browsers behave, it
+may be better to check for approved tags. Either way, you'll want the
+allowed or disallowed tags list to be kept in an easy-to-modify
+configuration file. Further, you probably want to perform a bit of
+validation on the use of allowed tags such as B or I. A user who makes a
+mistake and forgets to close one of these tags might render 100 comments
+underneath in an unusual font style.
+
+### EXERCISE 3
+
+Document your team's approach to preventing one user from attacking
+other users with malicious HTML. Your documentation of this
+infrastructure should include procedure names and examples of how those
+procedures are to be used.
+
+### TIME AND MOTION
+
+All of the exercises in this chapter are intended to be done by the team
+as a whole. A team that takes the assignment seriously should spend
+about 3 hours together agreeing to and documenting standards. They then
+might decide to rework some of their older code to conform to these
+standards, which could take another 5 or 10 programmer-hours. The second
+step is optional, though by the end of the course we would expect all
+the projects to be internally consistent.
+
+------------------------------------------------------------------------
+
+Return to   
+  
+
+, ,

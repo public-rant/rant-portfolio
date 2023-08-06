@@ -1,0 +1,538 @@
+---
+draft: true
+title: Planning
+slug: planning
+---
+
+import OrderedList from '../../components/OrderedList.astro';
+export const components = {ol: OrderedList,p:OrderedList}
+
+## PLANNING
+
+------------------------------------------------------------------------
+
+If you're reading this chapter, we assume that you've completed the
+"Basics" problem set and are going to stay with the course for the rest
+of the semester. Welcome. Now it is time to plan your work during the
+core of the course.
+
+Everyone in this course will be building an online learning community, a
+site where users teach each other. The work may be done alone or in
+groups of two or three students. Ideally, you or your instructors will
+find a real client for you, someone who wants to publish and administer
+the community on an ongoing basis. A good client would be a non-profit
+organization that wants to educate people about the subject surrounding
+its mission. A good client would be a medium-sized company that wants a
+knowledge-sharing system for employees. A good client would be a student
+group at your university. If you can't find a client, pick something
+that you're passionate about. It could be Islamic architecture. It could
+be African Cichlids (a family of freshwater fishes, living mostly in the
+rift lakes of East Africa; see ). It could be cryptography. Pick
+something where you think that you can easily get or generate *magnet
+content*, some tutorial information that will attract users to your
+service.
+
+You are building the same type of project as everyone else in the class.
+Thus it will be easy for you to compare approaches to, for example, user
+registration or content management.
+
+Before you starting writing code, however, we'd like you to do some
+planning and competitive analysis. Fundamentally you need to answer the
+questions "Who is going to teach what to whom?" and "What alternatives
+are currently available for this kind of learning?"
+
+### USER CLASSES
+
+Start by dividing your users into classes. Two users should fall into
+the same class if you expect them to want substantially the same
+experience with your service. It is almost always useful to think about
+different levels of administrative privileges as you are dividing the
+users into classes. It is almost never useful to think about teachers
+versus learners; the whole point of an online community is that each
+user learning some of the time and each user is teaching some of the
+time.
+
+#### EXAMPLE USER CLASS DECOMPOSITION ON PHOTO.NET
+
+To give you an idea of what a user class decomposition might look like,
+we'll walk through one for .
+
+First, consider the overall objective of photo.net: A place where a
+person can go and get the answer to any question about photography.
+
+Second, consider levels of administrative privilege. There are
+**site-wide administrators**, who are free to edit or delete any content
+on the site. These administrators also have the power to adjust the
+authority of other users. We have **moderators** who have authority to
+approve or delete postings in particular discussion forums. Finally
+there are **regular users** who can read, post, and edit their own
+contributions. A less popular service could probably get away with only
+two levels of admin privilege.
+
+A different way of dividing the users is by purpose in visiting the
+service:
+
+FIXME
+
+A final way of dividing users that may be useful is by how they connect.
+In the case of photo.net, it is easy to envision the **Web browser
+user**. This user is uploading and downloading photos, participating in
+discussions, reading tutorials, shopping for equipment, etc. The same
+person may connect via a mobile phone, in which case he or she becomes a
+**mobile user**. If the mobile user is in the middle of a photographic
+project, we want to provide information about nearby camera shops,
+processing labs, repair shops, time of sunset, good locations, and other
+useful data. If the mobile user is connecting for social purposes, we
+need to think about what are practical ways for a person on a mobile
+phone to participate in an online community. Our engineering challenge
+is similar for the **telephone user**.
+
+### USAGE SCENARIOS
+
+For each class of user, you should write down a rough idea of what a
+person in this class would get from your new service. You may want to
+hint at page flow.
+
+#### EXAMPLE: NOVICE PHOTOGRAPHER SHOPPER AT PHOTO.NET
+
+The novice should start by reading a bunch of carefully authored
+camera-buying advice articles and then reviews of specific cameras. Much
+of the best shopping advice is contained in question-and-answer
+exchanges within the discussion forums so editors will need a way to
+pick out and point to the best threads in the forum archives. After our
+user has read all of this stuff, it would be ideal if he or she could be
+directed into a Q&A forum where "here's what I've decided to buy; what
+do you think?" questions are welcomed. That could be implemented as an
+explicitly social shopping system with one column for responses from
+other readers and an adjacent column for bids from camera shops.
+
+#### EXAMPLE: SITE-WIDE ADMINISTRATOR AT PHOTO.NET
+
+The site-wide administrator should log in and see a page that gives the
+pulse of the community with statistics on the number of new users
+registered, the quantity of photos uploaded into the photo sharing
+system, the activity in the discussion forums, the relative efforts of
+the moderators (volunteers from the community). If there are unbanned
+users who have been responsible for an onerous amount of moderator work
+in deleting off-topic postings, etc., these should be listed with a
+summary of their problematic activities and an option to ban.
+
+### EXERCISE 1A
+
+Answer the following questions:
+
+FIXME
+
+Make sure that your answers to this and all subsequent exercises are
+Web-accessible. It is a good idea to get into the discipline of ensuring
+that all documents relevant to your project are available on the project
+server itself, perhaps in the directory.
+
+### EXERCISE 1B: BUILD USER PROFILE PAGES
+
+When building an application it would be ideal to have the potential
+users in the room with you at all times. Their needs would then be
+concrete and manifest. This isn't very practical, however, and therefore
+as an aid to making the people for whom you're building the application
+concrete, you should build two or three profile pages. A profile page
+contains the following information: (a) a picture of the user, (b) the
+user's name, age, occupation, marital status, housing situation, and
+income, (c) the user's short-term and long-term goals relevant to the
+online community that you're building, (d) the immediate questions that
+this user will bring to the site, (e) the kind of computer equipment and
+connection in this person's house, and (f) any other information that
+will help to humanize this fictitious person.
+
+To assist you in this task we've created a couple of examples for an
+online learning community in the area of general aviation:
+
+FIXME
+
+If you don't have a good photo library of your own, lift photos (with
+credit) from photo.net and other online sources.
+
+Don't spend more than one hour on this exercise; plenty of truly awful
+software has been written with fancy user profiles on the programmers'
+desks. There is no substitute for launching a service to real users and
+then watching their behavior attentively.
+
+### EXERCISE 1C
+
+For each class of user identified in Exercise 1a, produce a textual or
+graphical usage scenario for how that user will experience your service.
+
+### EVALUATING ALTERNATIVES: OFFLINE
+
+Whenever Nick Gittes (1902–2000; grandfather of one of the authors)
+would see a computer advertised on television, he'd say "A home
+computer. Why would anyone want a thing like that?"
+
+The dotcom boom is over. You ought to have a good reason for building an
+information system. If a curmudgeon wants to know why you need all these
+fancy computers instead of a book, some chalk, and pencil and paper, it
+would be nice to have a convincing answer.
+
+There are good reasons to look at the best elements of offline resources
+and systems. After several millenia, many of these systems are
+exquisitely refined and extremely effective. Your online community and
+technology-aided learning environment can be much improved by careful
+study of the best offline alternatives.
+
+#### EXAMPLE: POPULAR PHOTOGRAPHY MAGAZINE
+
+The largest circulation offline publication in the U.S. world of
+photography is the sixty-five-year-old magazine Popular Photography. It
+is extremely effective at answering the following questions: What is the
+price of a Nikon 50/1.4 lens? What are the latest cameras available? How
+does the new Canon Elan 7 body perform on a test bench?
+
+The magazine is ineffective for start-to-finish learning. It is
+impossible for Popular Photography to sell enough ads to run a
+twenty-page tutorial article much less a complete beginner's textbook on
+photography. The magazine is ineffective for finding the average price
+for a used or obscure item. (Shutterbug is the place for used and
+classic camera dealer ads.)
+
+The magazine is ineffective as a means of getting answers to arbitrary
+questions. There is a "Too Hot to Handle" section in every issue that
+promises "Honest, forthright answers to your most probing questions."
+Unfortunately, only four questions are answered per issue. Presumably
+these were submitted at least a couple of months previously. And the
+answers come only from the editors of the magazine; they don't tap the
+reserves of knowledge that may reside among the hundreds of thousands of
+subscribers.
+
+The magazine is ineffective as a means of exhibiting reader work. The
+"Your Best Shot" column displays five or six reader-contributed photos
+in every issue, but being selected is a slow and uncertain process.
+
+#### EXAMPLE: FACE-TO-FACE COURSE
+
+The main strength of a face-to-face course in photography is guaranteed
+mentoring. The instructor keeps track of each student's progress and
+questions. Another strength of a face-to-face course is the availability
+of critiques from other students and the instructor.
+
+Face-to-face courses require more travel, time, effort, and commitment
+than many people are able to give. Once the course is over, the student
+is unable to avail him or herself of mentoring and critiques from the
+instructor and other students.
+
+### EXERCISE 2
+
+Write down the best features of offline alternatives for learning the
+subject matter of the service that you're building. Indicate those
+features that you think can be translated into an online community and,
+if so, how. Write a three-sentence justification for why your online
+learning community will be an improvement over offline alternatives for
+at least some group of people.
+
+### EVALUATING ALTERNATIVES: ONLINE
+
+In performing your analysis of online competitors you should look at any
+service or resources for learning in your subject area. But pay special
+attention to online learning communities. Before setting off to surf,
+you might find it useful to think about the following elements of
+sustainable online community:
+
+1.  magnet content authored by experts
+2.  means of collaboration
+3.  powerful facilities for browsing and searching both magnet content
+    and contributed content
+4.  means of delegation of moderation
+5.  means of identifying members who are imposing an undue burden on the
+    community and ways of changing their behavior and/or excluding them
+    from the community without them realizing it
+6.  means of software extension by community members themselves
+
+When you visit a site ask yourself "Did they author or license a
+substantial body of tutorial content?" Look at the ratio between
+publisher-authored and user-authored content. If more than half of the
+content is authored by users, the site is heading away from *publishing*
+and toward *community*. Note the number of different ways in which a
+user can post some information that then becomes available to other
+users ("means of collaboration"). See whether the default search utility
+on the site returns results from things like discussion forum postings.
+As an unprivileged user, it will be hard for you to determine whether or
+not the site has provisions for distributing the content moderation
+burden or excluding difficult users. However, you can sometimes make
+inferences about Element 6, whether or not the software can be extended
+by people who are regular users and administrators of the community but
+aren't expert programmers. If the site is commercial, check the job
+listings to see what skills are required. If the site hasn't adopted the
+abstract URL religion (see "Basics" chapter) the file extensions may
+give you a clue as to implementation technology. A ".pl", ".asp",
+".php", ".adp", or ".tcl" indicates the use of a scripting language
+amenable to program extensions by novices. A ".jsp" or the term
+"servlet" in the URL indicates the use of Java, a language that is
+intended only for professional programmers.
+
+### EXERCISE 3
+
+Find the best existing online communities in your subject area. Note how
+closely they conform to the six elements of sustainability listed above.
+Also write down anything strikingly good or bad about the registration
+process and the mechanisms of collaboration, e.g., in discussion forums,
+comments on articles, and chat rooms. Look for voice and mobile
+interfaces. If present, try them out. ( provides a list of desktop
+browser-based phone emulators so that you won't have to use your mobile
+phone; alternatively type "WAP emulator" or "Mobile browser emulator"
+into a public search engine.) Look for evidence of personalization and
+direct controls over preferences.
+
+### DOES THE WORLD NEED MORE THAN ONE ONLINE COMMUNITY?
+
+Suppose that in Exercise 3 you found 100 online communities in your
+subject area. Should you be discouraged? A search at amazon.com for
+"aquarium" yields 679 books on the subject of keeping fish at home. The
+National Center for Educational Statistics () found that there were 3913
+colleges and universities in the United States in 1998. The computing
+world historically has tended toward concentration. There is only room
+for one or two desktop user interfaces, one or two word processors, one
+or two spreadsheets, a handful of enterprise accounting systems, etc.
+Two factors prevent similar concentration in the world of online
+learning communities. One is the idiosyncracy of authorship. A person
+may believe that Anna Karenina is the best novel ever written and
+simultaneously be interested in reading C. D. Payne's . A moviegoer may
+believe that Gone with the Wind will never be excelled and yet still
+invest two hours in . The range of idiosyncracy is narrower in
+explicitly tutorial works. Nonetheless one can admit the towering
+accomplishment of Stroebel's and still profit from working through
+(Bernhard Seuss 1995).
+
+The second force that prevents concentration in the world of online
+learning communities is the nature of community itself. Christopher
+Alexander, Sara Ishikawa, and Murray Silverstein argue in (Oxford
+University Press 1977) against countries of more than a few million
+people:
+
+> "It is not hard to see why the government of a region becomes less and
+> less manageable with size. In a population of N persons, there are of
+> the order of N^2 person-to-person links needed to keep channels of
+> communication open. Naturally, when N goes beyond a certain limit, the
+> channels of communication needed for democracy and justice and
+> information are simply too clogged, and too complex; bureaucracy
+> overwhelms human process. ...
+>
+> "We believe the limits are reached when the population of a region
+> reaches some 2 to 10 million. Beyond this size, people become remote
+> from the large-scale processes of government. Our estimate may seem
+> extraordinary in the light of modern history: the nation-states have
+> grown mightily and their governments hold power over tens of millions,
+> sometimes hundreds of millions, of people. But these huge powers
+> cannot claim to have a natural size. They cannot claim to have struck
+> the balance between the needs of towns and communities, and the needs
+> of the world community as a whole. Indeed, their tendency has been to
+> override local needs and repress local culture, and at the same time
+> aggrandize themselves to the point where they are out of reach, their
+> power barely conceivable to the average citizen."
+
+If it were possible for everyone to pile into a single community and
+have a great learning experience, America Online would long ago have
+subsumed all the smaller communities on the Internet. One of the later
+chapters of this book is devoted to the topic of growing an online
+community gracefully to a large size. But, for now, rest assured that it
+is a hard problem that nobody has solved. Given sufficiently high
+quality magnet content and an initial group of people dedicated to
+teaching, there will always be room for a new learning community.
+
+### EXERCISE 4
+
+Identify sources of magnet content for your community this semester. If
+some of this content is going to come from other people, write to them
+and ask for permission. Even if you're only using their work
+experimentally, one concern that an author or publisher might have is
+that your site will get indexed by search engines and readers will be
+misdirected to your site instead of theirs. In practice, this is not a
+problem if your server isn't accessible from the public Internet or if
+you include a file that will instruct search engines to exclude certain
+content. You may get a friendlier response from copyright holders if you
+agree to provide a hyperlinked credit and to ensure that their content
+does not become multiply indexed.
+
+If you have a client who is supplying all the magnet content, write down
+a summary of what is going to be available and when. Next to each class
+of documents note the person responsible for assembling and delivering
+them. As an engineer, it isn't your job to assemble and develop content,
+but it is your job to identify risks to a project, such as "not enough
+magnet content" or "nobody has thought about magnet content".
+
+### DOMAIN NAME SYSTEM
+
+The Domain Name System (DNS) translates human-readable hostnames, e.g.,
+, into machine-readable and network-routable IP addresses, e.g., . DNS
+is a distributed application in that there is no single computer that
+holds translations for all possible hostnames. A domain registrar, e.g.,
+, records that the domain servers for the google.com domain are at
+particular IP addresses. A user's local *name server* will query the
+name servers for google.com to find the translation for the hostname .
+Note that there is nothing magic about "www"; it is merely a
+conventional name for a computer that runs a Web server. The procedure
+for translating a hostname such as is the same as that applied for
+translating .
+
+### EXERCISE 5: SETTLE ON A HOSTNAME
+
+Working with your client, pick a hostname for the application that
+you'll be building this semester. If you're building something within
+MIT, for example, you'll probably want to pick . You and your client
+will need to navigate the IT bureaucracy to register that hostname and
+map it to the IP address of your server. If you're building a service
+for a client who does not have an Internet domain, encourage them to
+come up with a good name and register it. The authors have had good
+experience with , a service that includes bundled use of their DNS
+servers; the domain owner can edit the hostname-to-IP-address
+translations with a Web browser interface.
+
+### EXERCISE 6: NEGOTIATE INTELLECTUAL PROPERTY RIGHTS
+
+One of the thing that distinguishes a professional software engineer is
+success in negotiating intellectual property rights. If you give away
+all rights to everything that you produce as a "work for hire", you
+won't have a personal toolkit of software that you can reuse on new
+projects. If you don't give away any rights, nobody will be able to run
+your software, which probably means that you won't be able to solve
+social or organizational problems. A good negotiator gives away things
+that are valuable to the other side, but that aren't valuable to his or
+her side.
+
+During this course, for example, you will ideally want to retain
+ownership of all software that you produce. You will therefore be free
+to reuse the code in any way, shape, or form. The client, however, is
+going to be putting in a lot of time and effort working with you over a
+period of months and is thus entitled to some benefit. Your university
+tuition payments have probably drained away all of the cash in your bank
+account and therefore you won't be giving the client money as
+compensation for his or her time. What you can do is give the client a
+license to use your software. This obviously benefits the client but it
+also benefits you. The more people that are out there happily running
+your software the better your professional resume looks.
+
+Should you try to limit what the client can do with your software?
+Generally this isn't worthwhile. Any organization that comes to you for
+programming assistance is probably not an organization that will want to
+hang out a shingle and offer to develop software for others. If they do
+decide that it would make sense to adapt your software to another
+application within the company, it is very likely that they will call
+you first to offer a consulting fee in exchange for your assistance.
+
+How about limiting your liability? Oftentimes software engineers are
+called upon to write programs whose failure would have catastrophic
+results. Suppose that you are offered \$100,000 to write a trading
+program for an investment bank. That may seem like a great deal until
+the bank sues you for \$100 million, alleging that a bug in your program
+cost them \$100 million in lost profits. In the biomedical field a bug
+can be much more serious. There is the famous case of the Therac-25
+radiation treatment machine, bugs in whose control software cost lives
+(see ).
+
+Disclaiming liability is difficult, even for trained lawyers, and hence
+this is best left to professionals. Nearly every commercial software
+license includes a disclaimer of warranty. Here's a snippet from the
+Microsoft End User License Agreement (EULA):
+
+> 19\. DISCLAIMER OF WARRANTIES. TO THE MAXIMUM EXTENT PERMITTED BY
+> APPLICABLE LAW, MICROSOFT AND ITS SUPPLIERS PROVIDE THE SOFTWARE AND
+> SUPPORT SERVICES (IF ANY) AS IS AND WITH ALL FAULTS, AND HEREBY
+> DISCLAIM ALL OTHER WARRANTIES AND CONDITIONS, WHETHER EXPRESS,
+> IMPLIED, OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, ANY (IF ANY)
+> IMPLIED WARRANTIES, DUTIES OR CONDITIONS OF MERCHANTABILITY, OF
+> FITNESS FOR A PARTICULAR PURPOSE, OF RELIABILITY OR AVAILABILITY, OF
+> ACCURACY OR COMPLETENESS OF RESPONSES, OF RESULTS, OF WORKMANLIKE
+> EFFORT, OF LACK OF VIRUSES, AND OF LACK OF NEGLIGENCE, ALL WITH REGARD
+> TO THE SOFTWARE, AND THE PROVISION OF OR FAILURE TO PROVIDE SUPPORT OR
+> OTHER SERVICES, INFORMATION, SOFTWARE, AND RELATED CONTENT THROUGH THE
+> SOFTWARE OR OTHERWISE ARISING OUT OF THE USE OF THE SOFTWARE. ALSO,
+> THERE IS NO WARRANTY OR CONDITION OF TITLE, QUIET ENJOYMENT, QUIET
+> POSSESSION, CORRESPONDENCE TO DESCRIPTION, OR NON-INFRINGEMENT WITH
+> REGARD TO THE SOFTWARE.  
+>   
+> 20. EXCLUSION OF INCIDENTAL, CONSEQUENTIAL, AND CERTAIN OTHER DAMAGES.
+> TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL
+> MICROSOFT OR ITS SUPPLIERS BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+> PUNITIVE, INDIRECT, OR CONSEQUENTIAL DAMAGES WHATSOEVER (INCLUDING,
+> BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS OR CONFIDENTIAL OR
+> OTHER INFORMATION, FOR BUSINESS INTERRUPTION, FOR PERSONAL INJURY, FOR
+> LOSS OF PRIVACY, FOR FAILURE TO MEET ANY DUTY INCLUDING OF GOOD FAITH
+> OR OF REASONABLE CARE, FOR NEGLIGENCE, AND FOR ANY OTHER PECUNIARY OR
+> OTHER LOSS WHATSOEVER) ARISING OUT OF OR IN ANY WAY RELATED TO THE USE
+> OF OR INABILITY TO USE THE SOFTWARE, THE PROVISION OF OR FAILURE TO
+> PROVIDE SUPPORT OR OTHER SERVICES, INFORMATION, SOFTWARE, AND RELATED
+> CONTENT THROUGH THE SOFTWARE OR OTHERWISE ARISING OUT OF THE USE OF
+> THE SOFTWARE, OR OTHERWISE UNDER OR IN CONNECTION WITH ANY PROVISION
+> OF THIS EULA, EVEN IN THE EVENT OF THE FAULT, TORT (INCLUDING
+> NEGLIGENCE), MISREPRESENTATION, STRICT LIABILITY, BREACH OF CONTRACT,
+> OR BREACH OF WARRANTY OF MICROSOFT OR ANY SUPPLIER, AND EVEN IF
+> MICROSOFT OR ANY SUPPLIER HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+> DAMAGES.  
+>   
+> 21. LIMITATION OF LIABILITY AND REMEDIES. NOTWITHSTANDING ANY DAMAGES
+> THAT YOU MIGHT INCUR FOR ANY REASON WHATSOEVER (INCLUDING, WITHOUT
+> LIMITATION, ALL DAMAGES REFERENCED HEREIN AND ALL DIRECT OR GENERAL
+> DAMAGES IN CONTRACT OR ANYTHING ELSE), THE ENTIRE LIABILITY OF
+> MICROSOFT AND ANY OF ITS SUPPLIERS UNDER ANY PROVISION OF THIS EULA
+> AND YOUR EXCLUSIVE REMEDY HEREUNDER (EXCEPT FOR ANY REMEDY OF REPAIR
+> OR REPLACEMENT ELECTED BY MICROSOFT WITH RESPECT TO ANY BREACH OF THE
+> LIMITED WARRANTY) SHALL BE LIMITED TO THE GREATER OF THE ACTUAL
+> DAMAGES YOU INCUR IN REASONABLE RELIANCE ON THE SOFTWARE UP TO THE
+> AMOUNT ACTUALLY PAID BY YOU FOR THE SOFTWARE OR U.S.\$5.00. THE
+> FOREGOING LIMITATIONS, EXCLUSIONS, AND DISCLAIMERS SHALL APPLY TO THE
+> MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, EVEN IF ANY REMEDY FAILS
+> ITS ESSENTIAL PURPOSE.
+
+This is so important to Microsoft that it is the only part of a
+twelve-page agreement that is printed in boldface and the only part that
+is presented in a French translation for Canadian customers as well.
+
+If you don't want to cut and paste Microsoft's verbiage, which might
+expose you to a copyright infringement action from Redmond, consider
+employing a standard free software or open-source license, of which the
+GNU General Public License is the best-known example. Note that using a
+free software license doesn't mean that your software is now free to the
+world. You may have licensed one client under the GNU GPL but whether or
+not you decide to offer anyone else a license is a decision for the
+future.
+
+If you wish, you can use as a starting point in negotiating rights with
+your client. And remember that old bromide of business: *You don't get
+what you deserve; you get what you negotiate.*
+
+### MORE
+
+FIXME
+
+### TO THE INSTRUCTOR
+
+It is helpful during the second meeting of the class to bring clients on
+campus to give three-minute presentations pitching their projects. Here
+is a suggested outline to the client for the presentation:
+
+1.  introduce the speaker and the organization he or she represents (15
+    seconds)
+2.  explain who the users are and why they need to interact via an
+    Internet application, i.e., what problem is this online community
+    solving (1.5 minutes)
+3.  describe how users will be attracted to the site initially, e.g., is
+    there a collection of magnet content that these people need that
+    isn't available anywhere else? (30 seconds)
+4.  after the site has been up and running for a few months, what will a
+    typical interaction look like for a new user? (30 seconds)
+5.  what will happen after the semester is over, how will the system be
+    funded and sustained? (15 seconds)
+
+The client should be prepared to answer questions for a minute or two
+after the presentation.
+
+### TIME AND MOTION
+
+This problem set involves a two-hour meeting with the client, perhaps
+two hours of discussion and Web surfing among the students, an hour to
+build the user-profile pages, two hours of writing. That's seven hours
+total, most of which requires the entire team to work together.
+
+------------------------------------------------------------------------
+
+Return to   
+  
+
+, ,
