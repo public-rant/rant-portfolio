@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test';
+test('Non drafts Page', async ({ page }) => {
+  await page.goto('http://localhost:3003/slug');
+  await expect(page).toHaveScreenshot({ maxDiffPixels: 100 });
+});
 
 test('Landing Page', async ({ page }) => {
   await page.goto('http://localhost:3000');

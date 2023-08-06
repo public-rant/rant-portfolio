@@ -1,5 +1,5 @@
 ---
-import { getEntry } from "astro:content";
+import { getEntry, getCollection } from "astro:content";
 // 1. Get the slug from the incoming server request
 const { slug } = Astro.params;
 if (slug === undefined) {
@@ -16,9 +16,11 @@ import Layout from '../components/Layout.astro'
 // 4. (Optional) Render the entry to HTML in the template
 const { Content, components } = await entry.render();
 // import Heading from '../Heading.astro';
+
+const collection = await getCollection('drafts')
 ---
 <!-- --- -->
 <!-- Creates a custom <h1> for the # syntax, _and_ applies any custom components defined in `content.mdx` -->
 <!-- <Content components={{...components, h1: Heading }} /> -->
 
-<Layout Content={Content} title={entry.data.title} />
+<Layout Content={Content} collection={collection.filter(x => x.data.slug !== slug)} title={entry.data.title} />

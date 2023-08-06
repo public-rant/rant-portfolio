@@ -5,13 +5,14 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "zx README.md",
     "preview": "astro preview",
     "astro": "astro",
     "playwright": "playwright"
   },
   "dependencies": {
     "@astrojs/mdx": "^0.19.7",
+    "@astrojs/netlify": "^2.5.2",
     "astro": "^2.9.7",
     "zx": "^7.2.3"
   },

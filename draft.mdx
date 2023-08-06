@@ -5,6 +5,8 @@ slug: ${slug}
 ---
 
 import OrderedList from '../../components/OrderedList.astro';
-export const components = {ol: OrderedList,p:OrderedList}
+import Para from '../../components/Para.astro';
+import Image from '../../components/Image.astro';
+export const components = {ol: OrderedList,p:Para, img: Image}
 
 ${body}

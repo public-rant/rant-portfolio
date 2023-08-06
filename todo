@@ -1,0 +1,13 @@
+[1]>8e829ec7b460a18e8802de9590cd83619d2f63ab start with tmux & colored calendars
+[3]>d799b2fe9c4b6ef2978a7bebc1001122bf561e96 Build Astro from calcurse notes
+[4]>4ccee53cd3451416baf36d09b0b4646566b2e82d Introduce CalDav
+[4]>7fef8ecf51f8bdfcec12439166d2de9919edbd3f calcurse events moving across calendars,
+[6] Docker extension
+[7] Web extension
+[8]>402ca2d2c7e19b3a367fa57d44c918636353dfce Continuous delivery
+[9] backup master key in proton
+[9] password store git
+[0]>938ad97c515bd814481121fddc2da9c3acfa0da1 Handling multiple users
+[0] Introduce restic
+[0]>ea01eed9f22d7d04519130c249e75f616c2e18f6 calcurse hooks run make
+[0]>3819d263849c5787be9f274fbe56a9f807e9acdf clean slate

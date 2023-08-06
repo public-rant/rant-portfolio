@@ -9,7 +9,7 @@ import Meta from '../components/Meta.astro'
 		<Meta title={title} />
 	</head>
 	<body>
-		{Content && <Content />}
 		{collection && collection.map(post => <li><a href={post.slug}>{post.data.title}</a></li>)}
+		{Content && <Content />}
 	</body>
 </html>

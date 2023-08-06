@@ -53,6 +53,48 @@
 
 # test: $(TARGETS)
 # 	yarn $@ $?
+# .PHONY: $(TARGETS)
+
+# all: staging.json
+# 	echo done
+
+# $(COLLECTION): $(TARGETS)
+# 	mkdir $@
+# 	for target in $?; do touch $@/$$target.mdx; done
+
+# $(METADATA): $(TARGETS)
+# 	mkdir $@
+# 	for target in $?; do touch $@/$$target.json; done
+
+# %.html:
+# 	@curl -Ls $(DOMAIN)/$* > $@
+
+# $(METADATA)/%.json: $(METADATA)
+# 	jq -nf $*.jq --arg slug $* --argfile panflute panflute.json > $@
+
+# # DOMAIN = '.' for cached responses
+# $(COLLECTION)/%.mdx: $(COLLECTION)
+# 	pandoc --verbose --filter panflute --metadata-file $(METADATA)/$*.json -f html -t gfm --template draft.mdx $(DOMAIN)/$* > $@
+
+# update-snapshots:
+# 	yarn playwright test --update-snapshots
+
+# index: src/content/drafts/index.mdx
+
+# $(COLLECTION)/index.mdx: FINALS = $$(echo $(TARGETS) | jq -Rr 'split(" ")[] | "$(DOMAIN)/\(.)"')
+# $(COLLECTION)/index.mdx:
+# 	pandoc -M draft=false -M title=test -M slug=test --template draft.mdx -f html -t gfm $(FINALS) -o $@
+
+# staging.json: METADATA = src/content/meta/*.json
+# staging.json: DRAFTS = src/content/drafts/*.mdx
+# staging.json: $(METADATA) $(DRAFTS) 
+# 	yarn astro build
+# 	netlify deploy --json > $@
+
+# production.json:
+# 	netlify deploy --prod --json > $@
+# 	git commit
+# 	git push
 
 TARGETS = planning-redux
 TARGETS += basics
@@ -67,36 +109,49 @@ TARGETS += distributed-computing
 TARGETS += user-activity-analysis
 TARGETS += search
 
-UPSTREAM = https://philip.greenspun.com/seia
-DOWNSTREAM = http://localhost:3000
+DRAFTS = src/content/drafts
+METADATA = src/content/meta
+DOMAIN=$$(jq -r .deploy_url < staging.json)
 
-ifdef flag
-DOMAIN = $(UPSTREAM)
-endif
-DOMAIN ?= $(DOWNSTREAM)
+STAGING ?= "$$(cat staging.json)"#'{ "deploy_url": "https://philip.greenspun.com/seia" }'
 
+DEPLOY_URL = $$(jq -rn --argjson staging $(STAGING) '$$staging.deploy_url')
 
-.PHONY: $(TARGETS)
+# ${MAKE} $(DRAFTS)/*.mdx
+# Notice filters applied
+# With tests
+# Now deploy first version
+# make staging.json
+# Keep iterating, unset staging flag to start again
+# Notice changes are tracked in git (with calendar)
+# deploy to production
+# make production.json
+# $(COLLECTION)/index.mdx: FINALS = $$(echo $(TARGETS) | jq -Rr 'split(" ")[] | "$(DOMAIN)/\(.)"')
+# $(COLLECTION)/index.mdx:
+# 	pandoc -M draft=false -M title=test -M slug=test --template draft.mdx -f html -t gfm $(FINALS) -o $@
 
-all: $(TARGETS)
-	for target in $?; do \
-		${MAKE} -e DOMAIN=$(DOMAIN) $$target.json src/content/drafts/$$target.mdx; done
+.PHONY: staging.json production.json
 
-%.html:
-	@curl -Ls $(UPSTREAM)/$* > $@
+$(DRAFTS): clean
+	mkdir $@
+	mkdir $(METADATA)
+	for target in $(TARGETS); do touch $(DRAFTS)/$$target.mdx; done
+	${MAKE} -B $@/*.mdx
 
-%.json: metadata.jq
-	jq -nf $^ --arg slug $* --argfile panflute panflute.json > $@
+$(METADATA)/%.json:
+	jq -nf metadata.jq --arg slug $* --argfile panflute panflute.json > $@
 
-# DOMAIN = '.' for cached responses
-src/content/drafts/%.mdx: %.json %.html
-	pandoc --verbose --filter panflute --metadata-file $*.json -f html -t gfm --template draft.mdx $(DOMAIN)/$* > $@
+$(DRAFTS)/%.mdx: $(METADATA)/%.json
+	pandoc --verbose --filter panflute --metadata-file $(METADATA)/$*.json -f html -t gfm --template draft.mdx $(DEPLOY_URL)/$* > $@
 
-update-snapshots:
-	yarn playwright test --update-snapshots
+staging.json: $(DRAFTS)/*.mdx build
+	netlify deploy --json > $@
 
-final: src/content/drafts/final.mdx
+build:
+	yarn astro build
 
-src/content/drafts/final.mdx: FINALS = $$(echo $(TARGETS) | jq -Rr 'split(" ")[] | "$(DOMAIN)/\(.)"')
-src/content/drafts/final.mdx:
-	pandoc -M draft=false -M title=test --template draft.mdx -f html -t gfm $(FINALS) -o $@
+production.json: build
+	netlify deploy --prod --json > $@
+
+clean:
+	rm -rf $(DRAFTS) $(METADATA)

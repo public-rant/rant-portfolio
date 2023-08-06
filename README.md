@@ -1,47 +1,71 @@
-# Astro Starter Kit: Minimal
+update config.mk for the collection you want to build
 
-```
-npm create astro@latest -- --template minimal
-```
+run make collection -e mode=staging # to run tiktoken or deterministic for TDD. Less deterministic on final build and A/B after that
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+run yarn test to run integration tests
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+hooks/post-save
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+run make
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+now run it again with extra filters
 
-Any static assets, like images, can be placed in the `public/` directory.
+and so on until result as desired
 
-## 🧞 Commands
+finally put finishing touches on images etc.
 
-All commands are run from the root of the project, from a terminal:
+launch social media campaign
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:3000`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+run 
 
-## 👀 Want to learn more?
+make -e flag=up
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+you can run make src/content/drafts/%.mdx for debugging
+
+run make deploy:staging
+run make deploy production<-staging
+this will run netlify deploy and git push
+trigger workflow for sync
+
+you can print the final collection using make final
+done and on to the next thing
+endless scrolling
+
+yarn build
+
+looks good?
+git push
+
+Create a file named `staging.json` with a property `deploy_url` set to the value of the `URL` you want to track.
+
+With that in place, run this command
+
+```sh
+make
+```
+
+This will update `staging.json` and create `production.json`. Content fetched from the original `URL` is passed through `panflute` which in turn calls generative AI functions.
+
+since staging was updated, you can can this command again to get
+now you can rerun this command and you should have
+rolling deployments logged with netlify
+and versioned with git
+and backed up with restic
+and caollaborate with calendar
+and all therest
+
+You can create an index or abstract using
+
+```
+make index abstract appendix
+```
+
+You should deploy to production with
+
+```sh
+make prod
+```
+
+The output is useful for social media campaigns

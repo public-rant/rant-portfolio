@@ -5,304 +5,34 @@ slug: planning-redux
 ---
 
 import OrderedList from '../../components/OrderedList.astro';
-export const components = {ol: OrderedList,p:OrderedList}
+import Para from '../../components/Para.astro';
+import Image from '../../components/Image.astro';
+export const components = {ol: OrderedList,p:Para, img: Image}
 
 ## PLANNING REDUX
 
 ------------------------------------------------------------------------
 
-A lot has changed since the . You have a better understanding of the
-challenge, which may have sparked new service ideas in your mind. Your
-clients have had a chance to see a prototype of the ultimate service,
-which may have sparked new ideas in their minds. Your clients should
-have an increased respect for your abilities and therefore an increased
-willingness to devote thought and attention to this project. Consider
-that most computer programmers suffer from profound deficits in the
-following areas:
-
-FIXME
-
-To the extent that you've demonstrated that you're a cut above software
-developers with whom your clients have worked in the past, you'll find
-that their confidence in you has increased since the beginning of the
-class.
-
 ### WHY YOU ARE TALKING TO THE CLIENT
-
-Recall how much you learned in conducting the usability test in .
-Computer science textbooks and RDBMS manuals can teach you how to handle
-concurrency, but only observations of and interactions with users can
-teach you how to build a better user experience. Your client holds the
-keys to the kingdom: (1) content to attract people; (2) authority to
-launch the service; (3) editorial power over existing Web sites that can
-link to the new service; (4) email addresses and phone numbers of people
-who would be likely to find the new service useful.
-
-If you can launch your online learning community before the end of the
-course you'll have an opportunity to learn from the first users and, by
-making minor changes, end up with a vastly improved application by the
-last day of the class.
 
 ### CLEAN UP THE CODE
 
-Before beginning the planning process for the rest of the course, it is
-worth going through what you've done already in order to (a) clean it up
-a bit, and (b) familiarize yourself with things that will need
-significant rewrites. Work through every page script, data model file,
-and documentation page and ask yourselves the following questions:
-
-FIXME
-
-Fix the small discrepancies and record the large ones for inclusion in
-your rest-of-course implementation plan (see below).
-
 ### CLEAN UP THE USER EXPERIENCE
-
-With multiple programmers working on a system, it is easy for small
-inconsistencies to creep into the designs of various pages. Come up with
-a set of representative tasks that are important for users to accomplish
-within your application and document these tasks at . Work through the
-tasks as a team to see if indeed there are small things that should be
-cleaned up in terms of what the user sees.
-
-At the same time look for larger problems. Ask yourself how consistent
-task accomplishment within the application you've built is with the page
-design and flow at popular public Internet applications, such as Amazon,
-eBay, and Google. Remember that it is unique *content* that should
-distinguish one Web site from another, not unique interface.
-
-Are you bubbling information up to the highest possible level? For
-example, on a page that shows categories of things from a database table
-does your application display a count next to each category of how many
-items are within that category? Or must the user click down one more
-level to find out how many items are in a category (then back up and
-click down to another, then back up and click down to another, ...)?
-
-Are you letting the information be the interface? For example, in the
-preceding example of the list of categories, does the user navigate down
-by clicking on the name of the category ("the information") or must she
-click on a "click here for more info" text string or icon?
-
-How much of the screen space is taken up by site bureaucracy versus how
-much is available for displaying information? Site bureaucracy includes
-such things as identifying logos, navigation links and icons, mini
-search forms, and copyright and policy notes. Could some of that
-bureaucracy be eliminated, or at the very least be pushed to the bottom
-of the page?
 
 ### EXERCISE 1: USABILITY TEST LITE
 
-Between the discussion forum user test and the clean-up items in this
-chapter, you've cleaned up the obvious problems with your user
-interface. This is a good time to do another usability test, this time a
-bit less structured than the last one.
-
-Find someone who has never seen your project before and ask them to work
-through the tasks in with your entire team observing. Write down a brief
-report of how it went at .
-
 ### EXERCISE 2: FEATURE GRID
-
-By telephone or in a face-to-face meeting, work with your client to
-determine what work must be done before your online learning community
-can be launched. The launch can be private (limited to invitees), soft
-(public, but not advertised), or public. The important thing is that the
-application is treated as complete and presented to at least a few dozen
-users.
-
-Be careful of the layperson's tendency to try to pack in as many
-features as he or she can conceive. When a site is young, it should be
-simple and have few collaboration areas. If there are 30 separate
-discussion forums and comment areas, how are the first 15 users going to
-find each other? Remind your client that , "news for nerds", has
-operated since 1997 as a single uncategorized forum and in 2005 was
-serving approximately 250 million pages per month to 10 million readers.
-
-Does a competitive site have lots of bells and whistles? That's not a
-reason to delay launch until an equivalently complex user interface has
-been built. Are users of the competitive site actually using all of
-those features? Or are most of them congregating in a couple of places?
-
-People new to the world of online communities tend to see Launch Day as
-the most important day in the life of an Internet application. In fact,
-far more users will come to a site in its 36th month of existence
-compared to its first month. The only risk is launching something so
-terrible that a test user will be alienated and never return. In a world
-of 6 billion people, this might not seem like a serious problem, but if
-the potential users are, for example, corporate employees invited to try
-a new intranet, it may be essential to make a good first impression.
-Here are some minimum requirements for making a good first impression:
 
 FIXME
 
-If a client proposes a feature that is unnecessary for meeting these
-requirements, ask the question "Why does this keep us from launching?"
-Every day the service isn't launched is a day that you're not learning
-from users. Every day the service isn't launched is a day that the
-client's organization isn't learning how to operate the service.
-
-In collaboration with your client, develop a feature grid dividing the
-desired features into the following categories:
-
-1.  Minimum Launchable Feature Set, i.e., things that are required for
-    the launch
-2.  Version 1.0 (try to finish by the end of this course)
-3.  Version 2.0 (write down so that a planned follow-on implementation
-    can be accomplished)
-
-Most admin pages can be excluded from the Minimum Launchable Feature
-Set. Until there are users, there won't be any user activity and
-therefore little need for statistics or moderation and organization of
-content. Things that are valuable to the users and client and reasonably
-easy to implement should be in Version 1.0. Anything that requires
-serious programming effort or that cannot be completely specified right
-now should be pushed out to Version 2.0.
-
-Place your feature grid at .
-
 ### EXERCISE 3: IMPLEMENTATION PLAN
-
-Now that you've figured out what you're going to do, it is time to write
-down how you're going to do it. Write an implementation plan that covers
-all activity by team members and the client through the last day of this
-course. The implementation plan should include dates for code freezes,
-acceptance testing, launch, and any relaunches. The implementation plan
-should be explicit and specific about which team member is going to do
-what and, more important, *what the client's responsibilities are.* "Joe
-Client will deliver additional site content by early May" is too vague.
-Better: "Joe Client will deliver copy for the /about-us, /privacy,
-/copyright, and /contact pages by May 2."
-
-Keep in mind that your goal is to launch the service as soon as possible
-so that everyone can learn from interaction with real live users.
-
-How can you estimate the number of hours that will be required to
-execute the tasks in the plan? After all, you've never done the things
-in the implementation plan before or they wouldn't be in the
-"to-be-implemented plan". The best tool for estimating a new project is
-a record of how long it took to do a bunch of old projects. To what is
-the new project most similar? Suppose that it took you three days to
-build a discussion forum system, for example, and you're asked to build
-a classified ad system. Both systems need a comparable number of
-database tables. Both systems accept content from users and require some
-sort of administrator approval. If built on the same server that is
-currently running the discussion forum, the classified ad system doesn't
-require any new software, subsystems, or other tools that you haven't
-already installed and used. Thus it would probably be safe to estimate
-the classified ad system as a three-day project.
-
-Place your completed plan at and email your client(s) and instructors
-notifying them that the plan is ready for final review.
 
 ### IS THIS NECESSARY?
 
-Suppose that your team is only two people and your client is one team
-member's mother, owner of a local SCUBA diving shop. Is it necessary to
-engage in such a formal process? Wouldn't it be possible to obtain a
-successful result by sitting down in one room and hacking out code,
-periodically calling Mom over to look at what's been done?
-
-Absolutely.
-
-Why the emphasis on process then when the teams are so small? It is a
-good habit for every software developer to get into, especially as
-modern software projects tend to stretch across corporate and
-international borders.
-
-Consider a software project from a Jane Decision-Maker's perspective.
-Jane doesn't know enough to distinguish between good code and bad code.
-Nor can she look at a mostly-finished project and figure out how much
-more coding is required to make it work. Jane Decision-Maker is not
-going to be comforted by a team of programmers with a track record of
-pulling everything together with a last-minute miracle. How does she
-know that the miracle will happen again on her project?
-
-What Jane will be comforted by is process and programmers who appear to
-operate in a manner that is predictable to them and their client. The
-more detailed the plain-language plans, the more comforted Jane will be,
-especially if the work has been contracted out to a separate
-corporation.
-
-In summary, larger teams require more process, longer projects require
-more process, and work that is spread across enterprises and/or
-international borders requires more process. Your project for this class
-is being done by a small team on a condensed schedule and, ideally,
-within the same city as the client. What benefit is there to you from
-using a process that isn't absolutely necessary?
-
-One benefit from using a more thorough process is that you'll tend to
-impress people a lot more in presentations of your work. People who
-conduct programmer job interviews have seen plenty of code monkeys, but
-they won't have seen too many who show up with printouts of their clear
-plans and schedules and then can talk about how they met those plans and
-schedules.
-
-A deeper benefit is that you'll get good at the process and it will
-become less of an effort on succeeding projects.
-
-The deepest benefit is that working with a written plan will become an
-unconscious habit. Pilots are trained to follow checklists and
-procedures extremely carefully and consistently. The plane won't fall
-out of the sky if things aren't done in the same order or same way on
-every flight, and a lot of the stuff doesn't matter if you're flying on
-a sunny day in a well-maintained airplane. Unless the checklists and
-procedures have become a habit, however, the pilot who encounters bad
-weather or mechanical problems has a good chance of dying. People tell
-themselves "I'm being sloppy today because this is an unchallenging
-flight, but I'll be careful when I need to be," but in fact the skills
-of carefulness aren't very useful unless they are habitual.
-
 ### EXERCISE 4 (FOR THE INSTRUCTOR)
 
-Call up each student team's clients and ask how strongly they agree with
-the following statements:
-
-1.  I consider the work that my student team has done to be comparable
-    in quality to the services that I visit every day on the public
-    Internet.
-2.  The service that my student team has built is a complete solution to
-    the challenges we outlined at the beginning of the semester.
-3.  The service that my student team has built is well organized and
-    easy to use.
-4.  I am impressed with the information and utility available to me on
-    the administration pages.
-5.  I understand what work has been done, what is going to be done by
-    the end of the course, and what is left for a Version 2.0.
-6.  My student team has made it easy for me to check on their progress
-    myself.
-7.  My student team has kept me well informed of their progress.
-8.  My student team has involved me appropriately in design and feature
-    decisions.
-9.  I was impressed by the thoroughness of the user testing done by my
-    student team.
-10. I am impressed by the clarity and thoroughness of the documentation.
-11. I think it would be easy for a new programmer to take this project
-    over in the event that my student team disappeared.
-12. I am impressed by the mobile phone interface to my service.
-13. I am impressed by the VoiceXML interface to my service.
-14. My student team is the best group of engineers that I have ever
-    worked with.
-15. My student team consists of people that I would very much like to
-    work with again.
-
-Score this exercise by adding scores from each question: 0 for
-"disagree" or wishy-washy agreement (clients won't want to say bad
-things about young volunteers), 1 for "agree", 2 for "strongly agree".
+FIXME
 
 ### TIME AND MOTION
 
-The whole team working together ought to be able to do the code and user
-experience clean-ups in one working day or 6 to 8 hours. The usability
-test should require no more than one hour. For a team that has kept its
-planning documents, schedule, and client meetings up-to-date, the
-feature grid and implementation plan should take less than one hour
-because this information is already written down and on their server.
-For a team that has let planning and documentation slip, it could be
-five hours to restore currency.
-
 ------------------------------------------------------------------------
-
-Return to   
-  
-
-, ,
