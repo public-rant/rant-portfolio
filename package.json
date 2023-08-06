@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "zx README.md",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "playwright": "playwright"
