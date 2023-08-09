@@ -1,5 +1,19 @@
 ---
+import { faker } from '@faker-js/faker'
+
 const props = Astro.props
+let imageUrl = import.meta.env.DRAFTS == 'true' ? faker.image.urlLoremFlickr({width: 100, height: 50, category: 'nature'}) : null
+imageUrl ||= factory(draft)
+export async function ImageFactory(draft: string) {
+	// const chatCompletion = await openai.generateImage({
+	// 	model: "dalle",
+	// 	max_tokens: 20,
+	// 	messages: [{role: 'user', content: content}],
+	// });
+
+	// return chatCompletion
+}
+
 ---
 
-<img {...props} class="test"><slot /></img>
+<img src={imageUrl} />

@@ -2,6 +2,7 @@
 import { getEntry, getCollection } from "astro:content";
 // 1. Get the slug from the incoming server request
 const { slug } = Astro.params;
+const { title } = Astro.props
 if (slug === undefined) {
   throw new Error("Slug is required");
 }
@@ -14,13 +15,31 @@ if (entry === undefined) {
 
 import Layout from '../components/Layout.astro'
 // 4. (Optional) Render the entry to HTML in the template
-const { Content, components } = await entry.render();
+const { Content } = await entry.render();
 // import Heading from '../Heading.astro';
 
+// TODO use astro params
 const collection = await getCollection('drafts')
+import OrderedList from '../components/OrderedList.astro';
+import Para from '../components/Para.astro';
+import Image from '../components/Image.astro';
+import Header from '../components/Header.astro';
+import SubHeader from '../components/SubHeader.astro';
+const components = {ol: OrderedList,p:Para, h2: Header, h3: SubHeader, img: Image}
 ---
+
+
 <!-- --- -->
 <!-- Creates a custom <h1> for the # syntax, _and_ applies any custom components defined in `content.mdx` -->
 <!-- <Content components={{...components, h1: Heading }} /> -->
 
-<Layout Content={Content} collection={collection.filter(x => x.data.slug !== slug)} title={entry.data.title} />
+
+<!-- TODO move layout to Content  -->
+<!-- TODO layout navigation invoked from component  -->
+
+<Layout title={title}>
+		<ul slot="navigation">
+      {collection && collection.map(post => <li class="text-sm"><a href={post.slug}>{post.data.title}</a></li>)}
+		</ul>
+    <Content slot="content" components={components} />
+</Layout>

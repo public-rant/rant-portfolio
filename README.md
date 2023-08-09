@@ -42,7 +42,7 @@ Create a file named `staging.json` with a property `deploy_url` set to the value
 
 With that in place, run this command
 
-```sh
+```
 make
 ```
 
@@ -64,8 +64,15 @@ make index abstract appendix
 
 You should deploy to production with
 
-```sh
+```
 make prod
 ```
 
 The output is useful for social media campaigns
+
+```sh
+make clean # to start fresh
+make -e DEPLOY_URL=https://philip.greenspun.com/seia
+make staging.json # Now deploy URL is your own and MDX is filled in with prompts
+make production.json # release a version with the prompts filled in
+```

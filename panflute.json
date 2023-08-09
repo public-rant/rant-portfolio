@@ -1,4 +1,6 @@
 {
-    "filters": ["convert_lists.py", "uppercase_headers.py"],
-    "path": "/Users/rant/Desktop/about_blank/rant-gpt/filters"
+    "path": "/Users/rant/Desktop/about_blank/rant-gpt/filters",
+    "filters": [
+        "convert_lists.py"
+    ]
 }

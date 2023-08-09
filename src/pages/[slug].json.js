@@ -10,6 +10,9 @@ export async function get({ params }) {
   res.data['panflute-filters'] = panfluteFilters
   res.data['panflute-path'] = panflutePath
 
+
+  // TODO
+  // a POST request could invoke the code and return test results
   // res.data.panflute-filters? = collections
 
 }

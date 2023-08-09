@@ -96,6 +96,19 @@
 # 	git commit
 # 	git push
 
+
+# ${MAKE} $(DRAFTS)/*.mdx
+# Notice filters applied
+# With tests
+# Now deploy first version
+# make staging.json
+# Keep iterating, unset staging flag to start again
+# Notice changes are tracked in git (with calendar)
+# deploy to production
+# make production.json
+# $(COLLECTION)/index.mdx: FINALS = $$(echo $(TARGETS) | jq -Rr 'split(" ")[] | "$(DOMAIN)/\(.)"')
+# $(COLLECTION)/index.mdx:
+# 	pandoc -M draft=false -M title=test -M slug=test --template draft.mdx -f html -t gfm $(FINALS) -o $@
 TARGETS = planning-redux
 TARGETS += basics
 TARGETS += user-registration-and-management
@@ -113,45 +126,39 @@ DRAFTS = src/content/drafts
 METADATA = src/content/meta
 DOMAIN=$$(jq -r .deploy_url < staging.json)
 
-STAGING ?= "$$(cat staging.json)"#'{ "deploy_url": "https://philip.greenspun.com/seia" }'
+# STAGING ?= "$$(cat staging.json)"#'{ "deploy_url": "https://philip.greenspun.com/seia" }'
+DEPLOY_URL ?= $$(jq -rn --argfile staging staging.json '$$staging.deploy_url')
+PANDOC = pandoc --verbose #--filter panflute
+.PHONY: $(TARGETS) staging.json production.json
 
-DEPLOY_URL = $$(jq -rn --argjson staging $(STAGING) '$$staging.deploy_url')
+drafts: $(DRAFTS)/*.mdx
 
-# ${MAKE} $(DRAFTS)/*.mdx
-# Notice filters applied
-# With tests
-# Now deploy first version
-# make staging.json
-# Keep iterating, unset staging flag to start again
-# Notice changes are tracked in git (with calendar)
-# deploy to production
-# make production.json
-# $(COLLECTION)/index.mdx: FINALS = $$(echo $(TARGETS) | jq -Rr 'split(" ")[] | "$(DOMAIN)/\(.)"')
-# $(COLLECTION)/index.mdx:
-# 	pandoc -M draft=false -M title=test -M slug=test --template draft.mdx -f html -t gfm $(FINALS) -o $@
-
-.PHONY: staging.json production.json
-
-$(DRAFTS): clean
-	mkdir $@
-	mkdir $(METADATA)
-	for target in $(TARGETS); do touch $(DRAFTS)/$$target.mdx; done
-	${MAKE} -B $@/*.mdx
-
-$(METADATA)/%.json:
+%.json:
 	jq -nf metadata.jq --arg slug $* --argfile panflute panflute.json > $@
 
-$(DRAFTS)/%.mdx: $(METADATA)/%.json
-	pandoc --verbose --filter panflute --metadata-file $(METADATA)/$*.json -f html -t gfm --template draft.mdx $(DEPLOY_URL)/$* > $@
+stage ?= draft
+$(DRAFTS)/%.mdx: %.json
+	$(PANDOC) --metadata-file $*.json -f html -t gfm --template $(stage).mdx $(DEPLOY_URL)/$* > $@
 
-staging.json: $(DRAFTS)/*.mdx build
+staging.json: build
 	netlify deploy --json > $@
 
 build:
 	yarn astro build
 
+
+# This should run through workflow adfter push once staging iterations are done
 production.json: build
 	netlify deploy --prod --json > $@
 
-clean:
-	rm -rf $(DRAFTS) $(METADATA)
+clean: $(TARGETS)
+	for t in $?; do rm -rf $$t.json; done
+	rm -rf $(DRAFTS)
+	mkdir $(DRAFTS)
+	for target in $(TARGETS); do touch $(DRAFTS)/$$target.mdx; done
+
+
+update-snapshots:
+	docker run --rm --network host -v $(pwd):/work/ -w /work/ -it mcr.microsoft.com/playwright:v1.36.0-jammy /bin/bash
+	npm install
+	npx playwright test --update-snapshots

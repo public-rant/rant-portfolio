@@ -1,12 +1,25 @@
 ---
-import Layout from '../components/Layout.astro'
+const title = "Richard Massey"
 import { getCollection } from 'astro:content';
-
-const title = "Experienced engineer and Product Manager"
-const blogPosts = await getCollection('drafts', ({ data }) => {
+import Layout from '../components/Layout.astro'
+import Image from '../components/Image.astro'
+const collection = await getCollection('drafts', ({ data }) => {
   return `${data.draft}` === import.meta.env.DRAFTS;
 });
 ---
 
-<h1>{title}</h1>
-<Layout collection={blogPosts} title={title} />
+<Layout title={title}>
+  <h1 class="title text-2xl" slot="title">{title}</h1>
+  <ul slot="navigation">
+  {collection.map(draft => (
+    <li>
+      <a href={draft.data.slug}>
+        <figure class="flex mt-4">
+          <Image class="inline" src={draft.data.slug} />
+          <figcaption class="inline p-8">{draft.data.title}</figcaption>
+        </figure>
+      </a>
+    </li>
+  ))}
+  </ul>
+</Layout>

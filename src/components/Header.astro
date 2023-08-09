@@ -1,0 +1,15 @@
+---
+const { draft } = Astro.props
+export async function GenerateContent (prompt: string) {
+	const chatCompletion = await openai.createChatCompletion({
+		model: "gpt-3.5-turbo-16k-0613",
+		max_tokens: 20,
+		messages: [{role: 'user', content: prompt}],
+	});
+
+	return chatCompletion
+}
+
+---
+
+<h2 data-test-id=foo class="title text-xl"><slot /></h2>
