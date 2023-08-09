@@ -1,24 +1,23 @@
 ---
+// TODO use astro params for collection to load
+// TODO there should be a related content widget that gets the content described in spec.
+// And moreover, since the content will mainly be prompts, the structure informs the related content
+// no need for special elements, the element described the content. DL for example.
+// You could promote headers until it is #1 for production.
 import { getEntry, getCollection } from "astro:content";
-// 1. Get the slug from the incoming server request
 const { slug } = Astro.params;
 const { title } = Astro.props
 if (slug === undefined) {
   throw new Error("Slug is required");
 }
-// 2. Query for the entry directly using the request slug
 const entry = await getEntry("drafts", slug);
-// 3. Redirect if the entry does not exist
 if (entry === undefined) {
   return Astro.redirect("/404");
 }
 
 import Layout from '../components/Layout.astro'
-// 4. (Optional) Render the entry to HTML in the template
 const { Content } = await entry.render();
-// import Heading from '../Heading.astro';
 
-// TODO use astro params
 const collection = await getCollection('drafts')
 import OrderedList from '../components/OrderedList.astro';
 import Para from '../components/Para.astro';
@@ -27,15 +26,6 @@ import Header from '../components/Header.astro';
 import SubHeader from '../components/SubHeader.astro';
 const components = {ol: OrderedList,p:Para, h2: Header, h3: SubHeader, img: Image}
 ---
-
-
-<!-- --- -->
-<!-- Creates a custom <h1> for the # syntax, _and_ applies any custom components defined in `content.mdx` -->
-<!-- <Content components={{...components, h1: Heading }} /> -->
-
-
-<!-- TODO move layout to Content  -->
-<!-- TODO layout navigation invoked from component  -->
 
 <Layout title={title}>
 		<ul slot="navigation">

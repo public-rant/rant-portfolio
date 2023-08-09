@@ -14,22 +14,9 @@ test('Landing Page', async ({ page }) => {
   // await expect(page).toHaveScreenshot({ maxDiffPixels: 100 });
 });
 
+
 // TODO env variables
 const experiments = [] as string[]
-// const experiments = ["planning-redux"]
-// experiments.concat("basics"),
-// "user-registration-and-management",
-// "planning",
-// "content-management",
-// "software-modularity",
-// "discussion",
-// "metadata",
-// "scaling",
-// "distributed-computing",
-// "user-activity-analysis",
-// "search"
-// ]
-
 for (const experiment of experiments) {
   test(`${name}`, async ({page}) => {
     await page.goto(`http://localhost:3000/${experiment}`);

@@ -1,6 +1,7 @@
 {
-    "path": "/Users/rant/Desktop/about_blank/rant-gpt/filters",
+    "path": "/Users/rant/Desktop/about_blank/rant-gpt",
     "filters": [
-        "convert_lists.py"
+        "privateGPT/ingest.py",
+        "privateGPT/privateGPT.py"
     ]
 }
